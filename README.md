@@ -1,0 +1,83 @@
+<p align="center">
+  <img src="docs/pyttogpanne.png" alt="Pyttogpanne" width="220">
+</p>
+
+<p align="center">
+  The Pyttogpanne app — turmat you can follow with the burner going and no signal.
+</p>
+
+---
+
+pyttogpanne-mobile is the phone app for **Pyttogpanne** — turmat cooked in one
+pan on a gas burner. Recipes are written in
+[pyttogpanne-app](https://github.com/sondresjolyst/pyttogpanne-app) and served by
+[pyttogpanne-api](https://github.com/sondresjolyst/pyttogpanne-api).
+
+## What's in it
+
+- **Recipes** — searchable by name or ingredient, filtered by category, with a
+  serving count that scales the amounts.
+- **Offline** — every published recipe is stored on the phone. Once it has
+  synced, the app works without signal; it only asks the API for what has
+  changed since last time.
+- **Shopping list** — send a recipe's ingredients to one list, grouped by the
+  recipe they came from.
+- **Favourites and gear tips** — saved on the device, no account needed.
+
+The app is Norwegian only and needs no sign-in.
+
+---
+
+## For developers
+
+<details>
+<summary>Run, build, and test from source</summary>
+
+### Stack
+
+Expo (SDK 57) · expo-router · TypeScript · Axios · AsyncStorage · Jest.
+
+### Run locally
+
+```bash
+npm install
+npm start      # then press a for Android, i for iOS
+```
+
+`extra.apiUrl` in `app.json` points the app at the API. Change it there for a
+local API, or per build profile in EAS.
+
+### Scripts
+
+```bash
+npm start       # Expo dev server
+npm run android # dev build on a connected device or emulator
+npm run ios     # dev build on a simulator
+npm test        # Jest
+```
+
+Expo itself is free; building with EAS beyond its free tier is not, and
+`npx expo run:android` builds locally without it. Store accounts cost what they
+cost: Apple 99 USD a year, Google 25 USD once.
+
+### Layout
+
+```
+app/              routes (expo-router)
+  (tabs)/         recipes, favourites, shopping list, gear
+  oppskrift/      one recipe
+  utstyr/         one gear or tips article
+src/api/          API client and the shapes it returns
+src/store/        offline catalog, favourites and shopping list
+src/recipes/      amount scaling and ingredient grouping
+src/theme/        colours, spacing, type scale
+```
+
+### How the offline copy works
+
+`CatalogProvider` reads the cache from AsyncStorage, then asks the API for
+everything changed since the `serverTime` it stored last. Changed recipes
+replace their cached copy, slugs the API reports as gone are dropped, and the
+new `serverTime` is saved. A failed sync leaves the cached recipes on screen.
+
+</details>
