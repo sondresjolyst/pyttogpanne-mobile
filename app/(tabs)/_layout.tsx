@@ -1,18 +1,35 @@
-import { Tabs } from 'expo-router';
+import { Image } from 'expo-image';
+import { Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, type } from '../../src/theme/theme';
+import { Link, Tabs } from 'expo-router';
+import FloatingTabBar from '../../src/components/FloatingTabBar';
+import { colors, space, type } from '../../src/theme/theme';
+
+/**
+ * A small mark beside the title on the first screen. Top left is where a logo is looked for,
+ * and at this size it sits under the title rather than competing with it: the app icon and the
+ * splash have already done the identifying.
+ */
+function Mark() {
+    return (
+        <Image
+            source={require('../../assets/splash-icon.png')}
+            style={styles.mark}
+            contentFit="contain"
+            accessibilityLabel="Pyttogpanne"
+        />
+    );
+}
 
 export default function TabsLayout() {
     return (
         <Tabs
+            tabBar={props => <FloatingTabBar {...props} />}
             screenOptions={{
-                headerStyle: { backgroundColor: colors.brown },
-                headerTintColor: colors.paper,
-                headerTitleStyle: { ...type.heading, color: colors.paper },
-                tabBarActiveTintColor: colors.ember,
-                tabBarInactiveTintColor: colors.inkSoft,
-                tabBarStyle: { backgroundColor: colors.paper, borderTopColor: colors.line },
-                tabBarLabelStyle: { fontSize: 12, fontWeight: '600' },
+                headerStyle: { backgroundColor: colors.paper },
+                headerShadowVisible: false,
+                headerTintColor: colors.ink,
+                headerTitleStyle: { ...type.title, color: colors.ink },
                 sceneStyle: { backgroundColor: colors.paper },
             }}
         >
@@ -20,30 +37,29 @@ export default function TabsLayout() {
                 name="index"
                 options={{
                     title: 'Oppskrifter',
-                    tabBarIcon: ({ color, size }) => <Ionicons name="restaurant-outline" color={color} size={size} />,
+                    headerLeft: () => <Mark />,
+                    headerRight: () => (
+                        <Link href="/om" asChild>
+                            <Pressable
+                                hitSlop={10}
+                                accessibilityRole="button"
+                                accessibilityLabel="Om Pyttogpanne"
+                                style={styles.about}
+                            >
+                                <Ionicons name="information-circle-outline" size={24} color={colors.ink} />
+                            </Pressable>
+                        </Link>
+                    ),
                 }}
             />
-            <Tabs.Screen
-                name="favoritter"
-                options={{
-                    title: 'Favoritter',
-                    tabBarIcon: ({ color, size }) => <Ionicons name="heart-outline" color={color} size={size} />,
-                }}
-            />
-            <Tabs.Screen
-                name="handleliste"
-                options={{
-                    title: 'Handleliste',
-                    tabBarIcon: ({ color, size }) => <Ionicons name="bag-handle-outline" color={color} size={size} />,
-                }}
-            />
-            <Tabs.Screen
-                name="utstyr"
-                options={{
-                    title: 'Utstyr',
-                    tabBarIcon: ({ color, size }) => <Ionicons name="flame-outline" color={color} size={size} />,
-                }}
-            />
+            <Tabs.Screen name="favoritter" options={{ title: 'Favoritter' }} />
+            <Tabs.Screen name="handleliste" options={{ title: 'Handleliste' }} />
+            <Tabs.Screen name="utstyr" options={{ title: 'Utstyr' }} />
         </Tabs>
     );
 }
+
+const styles = StyleSheet.create({
+    mark: { width: 28, height: 28, marginLeft: space.lg, marginRight: space.xs },
+    about: { marginRight: space.lg },
+});
