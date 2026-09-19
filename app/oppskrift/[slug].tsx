@@ -1,24 +1,26 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { imageUrl } from '../../src/api/client';
+import PhotoGallery from '../../src/components/PhotoGallery';
+import AdvertisingLabel from '../../src/components/AdvertisingLabel';
 import { detailLine, groupIngredients, ingredientLine, servingsFactor } from '../../src/recipes/format';
 import { useRecipe } from '../../src/store/catalog';
 import { useLists } from '../../src/store/lists';
-import { colors, radius, space, type } from '../../src/theme/theme';
+import { colors, radius, shadow, space, type, TAB_BAR_CLEARANCE } from '../../src/theme/theme';
 
 export default function RecipeScreen() {
     const { slug } = useLocalSearchParams<{ slug: string }>();
     const router = useRouter();
     const recipe = useRecipe(slug);
-    const { isFavourite, toggleFavourite, addToShopping } = useLists();
+    const { isFavourite, toggleFavourite, addToShopping, shopping } = useLists();
 
-    const [servings, setServings] = useState(recipe?.servings ?? 2);
+    // Null until the reader changes it, so the recipe's own serving count applies once the
+    // catalog has loaded rather than being captured on the first render.
+    const [servingsOverride, setServingsOverride] = useState<number | null>(null);
     const [doneSteps, setDoneSteps] = useState<number[]>([]);
-    const [added, setAdded] = useState(false);
 
+    const servings = servingsOverride ?? recipe?.servings ?? 2;
     const factor = recipe ? servingsFactor(recipe, servings) : 1;
     const groups = useMemo(() => groupIngredients(recipe?.ingredients ?? []), [recipe]);
 
@@ -37,15 +39,17 @@ export default function RecipeScreen() {
 
     const favourite = isFavourite(recipe.slug);
 
-    const addAll = () => {
+    // Read from the list itself, so clearing the list puts the button back.
+    const added = shopping.some(item => item.fromRecipe === recipe.title);
+
+    const addAll = () =>
         addToShopping(recipe.ingredients.map(ingredient => ingredientLine(ingredient, factor)), recipe.title);
-        setAdded(true);
-    };
 
     return (
         <ScrollView contentContainerStyle={styles.page} style={styles.scroll}>
             <Stack.Screen
                 options={{
+                    title: recipe.title,
                     headerRight: () => (
                         <Pressable
                             onPress={() => toggleFavourite(recipe.slug)}
@@ -53,20 +57,21 @@ export default function RecipeScreen() {
                             accessibilityRole="button"
                             accessibilityLabel={favourite ? 'Fjern fra favoritter' : 'Legg til i favoritter'}
                         >
-                            <Ionicons name={favourite ? 'heart' : 'heart-outline'} size={24} color={favourite ? colors.ember : colors.paper} />
+                            <Ionicons name={favourite ? 'heart' : 'heart-outline'} size={24} color={favourite ? colors.ember : colors.inkSoft} />
                         </Pressable>
                     ),
                 }}
             />
 
-            {recipe.coverImageId ? (
-                <Image source={{ uri: imageUrl(recipe.coverImageId, 1200) }} style={styles.hero} contentFit="cover" transition={150} />
-            ) : (
-                <View style={[styles.hero, styles.heroEmpty]} />
+            {recipe.isAdvertising && (
+                <View style={styles.disclosure}>
+                    <AdvertisingLabel advertiser={recipe.advertiser} />
+                </View>
             )}
 
+            <PhotoGallery images={recipe.images} />
+
             <View style={styles.body}>
-                <Text style={styles.title}>{recipe.title}</Text>
                 <Text style={styles.meta}>{detailLine(recipe)}</Text>
                 {recipe.intro ? <Text style={styles.intro}>{recipe.intro}</Text> : null}
 
@@ -74,7 +79,7 @@ export default function RecipeScreen() {
                     <Text style={styles.servingsLabel}>Porsjoner</Text>
                     <View style={styles.stepper}>
                         <Pressable
-                            onPress={() => setServings(current => Math.max(1, current - 1))}
+                            onPress={() => setServingsOverride(Math.max(1, servings - 1))}
                             accessibilityRole="button"
                             accessibilityLabel="Færre porsjoner"
                             style={styles.stepperButton}
@@ -83,7 +88,7 @@ export default function RecipeScreen() {
                         </Pressable>
                         <Text style={styles.stepperValue}>{servings}</Text>
                         <Pressable
-                            onPress={() => setServings(current => Math.min(50, current + 1))}
+                            onPress={() => setServingsOverride(Math.min(50, servings + 1))}
                             accessibilityRole="button"
                             accessibilityLabel="Flere porsjoner"
                             style={styles.stepperButton}
@@ -146,11 +151,9 @@ export default function RecipeScreen() {
 
 const styles = StyleSheet.create({
     scroll: { backgroundColor: colors.paper },
-    page: { paddingBottom: space.xxl },
-    hero: { width: '100%', aspectRatio: 4 / 3, backgroundColor: colors.paperSunk },
-    heroEmpty: { aspectRatio: 16 / 9 },
+    page: { paddingBottom: TAB_BAR_CLEARANCE },
+    disclosure: { paddingHorizontal: space.lg, paddingTop: space.md },
     body: { padding: space.lg, gap: space.md },
-    title: { ...type.display, color: colors.ink },
     meta: { ...type.meta, color: colors.moss },
     intro: { ...type.body, color: colors.inkSoft },
     servings: {
@@ -159,18 +162,17 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         backgroundColor: colors.white,
         borderRadius: radius.md,
-        borderWidth: 1,
-        borderColor: colors.line,
         paddingHorizontal: space.lg,
         paddingVertical: space.md,
         marginTop: space.sm,
+        ...shadow.card,
     },
     servingsLabel: { ...type.bodyStrong, color: colors.ink },
     stepper: { flexDirection: 'row', alignItems: 'center', gap: space.lg },
     stepperButton: {
-        width: 40,
-        height: 40,
-        borderRadius: radius.lg,
+        width: 44,
+        height: 44,
+        borderRadius: radius.pill,
         backgroundColor: colors.paperSunk,
         alignItems: 'center',
         justifyContent: 'center',
@@ -189,9 +191,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         gap: space.sm,
         backgroundColor: colors.brown,
-        borderRadius: radius.md,
+        borderRadius: radius.pill,
         paddingVertical: space.lg,
         marginTop: space.md,
+        ...shadow.card,
     },
     primaryButtonText: { ...type.bodyStrong, color: colors.paper },
     step: {
@@ -200,9 +203,8 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         backgroundColor: colors.white,
         borderRadius: radius.md,
-        borderWidth: 1,
-        borderColor: colors.line,
         padding: space.lg,
+        ...shadow.card,
     },
     stepDone: { backgroundColor: colors.paperSunk, borderColor: colors.paperSunk },
     stepNumber: { fontSize: 30, lineHeight: 32, fontWeight: '800', color: colors.ember, minWidth: 34 },

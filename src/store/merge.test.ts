@@ -14,11 +14,14 @@ const recipe = (slug: string, publishedAt: string): Recipe => ({
     tips: null,
     coverImageId: null,
     isPublished: true,
+    isAdvertising: false,
+    advertiser: null,
     publishedAt,
     updatedAt: publishedAt,
     categories: [],
     ingredients: [],
     steps: [],
+    images: [],
 });
 
 describe('merge', () => {

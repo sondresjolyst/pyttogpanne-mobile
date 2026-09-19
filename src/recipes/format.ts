@@ -19,14 +19,26 @@ export function ingredientLine(ingredient: RecipeIngredient, factor: number): st
         .join(' ');
 }
 
-/** Consecutive ingredients under the same heading, in the order the admin entered them. */
+/**
+ * Ingredients under their heading. Rows that share a heading end up in one section even when
+ * they were not entered next to each other; sections appear in the order their heading was
+ * first used, and rows keep the order they were entered in.
+ */
 export function groupIngredients(ingredients: RecipeIngredient[]): { heading: string | null; rows: RecipeIngredient[] }[] {
     const groups: { heading: string | null; rows: RecipeIngredient[] }[] = [];
+    const byHeading = new Map<string, { heading: string | null; rows: RecipeIngredient[] }>();
+
     for (const ingredient of ingredients) {
-        const heading = ingredient.groupName ?? null;
-        const last = groups[groups.length - 1];
-        if (last && last.heading === heading) last.rows.push(ingredient);
-        else groups.push({ heading, rows: [ingredient] });
+        const heading = ingredient.groupName?.trim() ? ingredient.groupName.trim() : null;
+        const key = heading ?? '';
+        const existing = byHeading.get(key);
+        if (existing) {
+            existing.rows.push(ingredient);
+            continue;
+        }
+        const group = { heading, rows: [ingredient] };
+        byHeading.set(key, group);
+        groups.push(group);
     }
     return groups;
 }

@@ -1,10 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { fetchCategories, fetchGear, fetchRecipeSync } from '../api/client';
-import type { GearItem, Recipe, RecipeCategory } from '../api/types';
+import { Image } from 'expo-image';
+import { fetchCategories, fetchGear, fetchLegalPages, fetchRecipeSync, imageUrl } from '../api/client';
+import type { GearItem, LegalPage, Recipe, RecipeCategory } from '../api/types';
 import { merge } from './merge';
 
-const CACHE_KEY = 'pyttogpanne.catalog.v1';
+// Bump when the cached shape changes: an old payload is dropped and the app resyncs.
+const CACHE_KEY = 'pyttogpanne.catalog.v2';
 
 interface Cache {
     /** The API's clock at the last successful sync, sent back as `since`. */
@@ -12,9 +14,31 @@ interface Cache {
     recipes: Recipe[];
     categories: RecipeCategory[];
     gear: GearItem[];
+    legal: LegalPage[];
 }
 
-const EMPTY: Cache = { serverTime: null, recipes: [], categories: [], gear: [] };
+const EMPTY: Cache = { serverTime: null, recipes: [], categories: [], gear: [], legal: [] };
+
+/**
+ * Pull the photos onto the phone while it still has signal. Without this a recipe synced but
+ * never opened at home has no picture on the trip, which is exactly when it is needed.
+ */
+async function prefetchPhotos(recipes: Recipe[], gear: GearItem[]): Promise<void> {
+    const urls = [
+        ...recipes.flatMap(recipe => recipe.images.map(image => imageUrl(image.contentImageId, 1200))),
+        ...recipes.flatMap(recipe => recipe.steps
+            .filter(step => step.contentImageId != null)
+            .map(step => imageUrl(step.contentImageId!, 1200))),
+        ...gear.flatMap(item => item.images.map(image => imageUrl(image.contentImageId, 1200))),
+    ];
+    if (urls.length === 0) return;
+
+    try {
+        await Image.prefetch(urls, 'disk');
+    } catch {
+        // Best effort: a photo that fails here is fetched on demand instead.
+    }
+}
 
 export type SyncState = 'loading' | 'ready' | 'syncing' | 'offline';
 
@@ -37,6 +61,7 @@ async function readCache(): Promise<Cache> {
             recipes: parsed.recipes ?? [],
             categories: parsed.categories ?? [],
             gear: parsed.gear ?? [],
+            legal: parsed.legal ?? [],
         };
     } catch {
         // A cache we cannot read is worth no more than an empty one.
@@ -64,10 +89,11 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
         setState(current.recipes.length > 0 ? 'syncing' : 'loading');
 
         try {
-            const [delta, categories, gear] = await Promise.all([
+            const [delta, categories, gear, legal] = await Promise.all([
                 fetchRecipeSync(current.serverTime ?? undefined),
                 fetchCategories(),
                 fetchGear(),
+                fetchLegalPages(),
             ]);
 
             const next: Cache = {
@@ -75,11 +101,16 @@ export function CatalogProvider({ children }: { children: React.ReactNode }) {
                 recipes: merge(current.recipes, delta.recipes, delta.deletedSlugs),
                 categories,
                 gear,
+                legal,
             };
             setCache(next);
             setLastError(null);
             setState('ready');
             await writeCache(next);
+
+            // After the text is safely stored: the photos are the slow part, and a failure
+            // here must not cost us the sync we just completed.
+            void prefetchPhotos(next.recipes, next.gear);
         } catch (error) {
             setLastError(error instanceof Error ? error.message : 'Ukjent feil');
             // Cached recipes are the whole point offline: keep showing them.
