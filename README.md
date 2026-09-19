@@ -23,6 +23,8 @@ pan on a gas burner. Recipes are written in
 - **Shopping list** — send a recipe's ingredients to one list, grouped by the
   recipe they came from.
 - **Favourites and gear tips** — saved on the device, no account needed.
+- **Terms, privacy and cookies** — downloaded with the recipes and read in the
+  app, so they are there without signal.
 
 The app is Norwegian only and needs no sign-in.
 
@@ -44,8 +46,10 @@ npm install
 npm start      # then press a for Android, i for iOS
 ```
 
-`extra.apiUrl` in `app.json` points the app at the API. Change it there for a
-local API, or per build profile in EAS.
+`EXPO_PUBLIC_API_URL` points the app at the API: set per build profile in
+`eas.json` (`development` and `preview` use the dev API, `production` the prod
+one), or in `.env.local` for a local API. Without it the app falls back to
+`extra.apiUrl` in `app.json`.
 
 ### Scripts
 
@@ -67,6 +71,8 @@ app/              routes (expo-router)
   (tabs)/         recipes, favourites, shopping list, gear
   oppskrift/      one recipe
   utstyr/         one gear or tips article
+  juridisk/       terms, privacy and cookies
+  om.tsx          about, with links to the legal pages
 src/api/          API client and the shapes it returns
 src/store/        offline catalog, favourites and shopping list
 src/recipes/      amount scaling and ingredient grouping
