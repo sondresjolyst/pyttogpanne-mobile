@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "Pytt og panne",
+    "name": "Pyttogpanne",
     "slug": "pyttogpanne",
     "scheme": "pyttogpanne",
-    "version": "0.1.0",
+    "version": "0.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -35,7 +35,7 @@
       "expo-image"
     ],
     "extra": {
-      "apiUrl": "https://pyttogpanne.prod.tumogroup.com/api"
+      "apiUrl": "https://pyttogpanne-api.prod.tumogroup.com/api"
     }
   }
 }
