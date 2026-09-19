@@ -15,10 +15,11 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "no.pyttogpanne.app"
+      "bundleIdentifier": "no.sjolystinnovation.pyttogpanne"
     },
     "android": {
-      "package": "no.pyttogpanne.app",
+      "package": "no.sjolystinnovation.pyttogpanne",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#4A3726",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -32,7 +33,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-image"
+      "expo-image",
+      "./plugins/withUploadSigning"
     ],
     "extra": {
       "apiUrl": "https://pyttogpanne-api.prod.tumogroup.com/api"
