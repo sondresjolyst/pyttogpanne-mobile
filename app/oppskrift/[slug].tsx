@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { imageUrl } from '../../src/api/client';
 import PhotoGallery from '../../src/components/PhotoGallery';
 import AdvertisingLabel from '../../src/components/AdvertisingLabel';
 import { detailLine, groupIngredients, ingredientLine, servingsFactor } from '../../src/recipes/format';
@@ -133,7 +135,18 @@ export default function RecipeScreen() {
                             style={[styles.step, done && styles.stepDone]}
                         >
                             <Text style={[styles.stepNumber, done && styles.stepNumberDone]}>{index + 1}</Text>
-                            <Text style={[styles.stepText, done && styles.stepTextDone]}>{step.text}</Text>
+                            <View style={styles.stepBody}>
+                                <Text style={[styles.stepText, done && styles.stepTextDone]}>{step.text}</Text>
+                                {step.contentImageId ? (
+                                    <Image
+                                        source={{ uri: imageUrl(step.contentImageId, 900) }}
+                                        style={styles.stepPhoto}
+                                        contentFit="cover"
+                                        transition={150}
+                                        accessibilityLabel={`Bilde til steg ${index + 1}`}
+                                    />
+                                ) : null}
+                            </View>
                         </Pressable>
                     );
                 })}
@@ -209,7 +222,9 @@ const styles = StyleSheet.create({
     stepDone: { backgroundColor: colors.paperSunk, borderColor: colors.paperSunk },
     stepNumber: { fontSize: 30, lineHeight: 32, fontWeight: '800', color: colors.ember, minWidth: 34 },
     stepNumberDone: { color: colors.inkSoft },
-    stepText: { ...type.body, color: colors.ink, flex: 1 },
+    stepBody: { flex: 1, gap: space.md },
+    stepText: { ...type.body, color: colors.ink },
+    stepPhoto: { width: '100%', aspectRatio: 4 / 3, borderRadius: radius.md, backgroundColor: colors.paperSunk },
     stepTextDone: { color: colors.inkSoft, textDecorationLine: 'line-through' },
     tips: {
         backgroundColor: colors.paperSunk,
