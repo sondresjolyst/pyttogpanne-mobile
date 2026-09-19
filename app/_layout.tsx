@@ -10,18 +10,21 @@ export default function RootLayout() {
         <SafeAreaProvider>
             <CatalogProvider>
                 <ListsProvider>
-                    <StatusBar style="light" />
+                    <StatusBar style="dark" />
                     <Stack
                         screenOptions={{
-                            headerStyle: { backgroundColor: colors.brown },
-                            headerTintColor: colors.paper,
-                            headerTitleStyle: { ...type.heading, color: colors.paper },
+                            headerStyle: { backgroundColor: colors.paper },
+                            headerShadowVisible: false,
+                            headerTintColor: colors.ink,
+                            headerTitleStyle: { ...type.title, color: colors.ink },
                             contentStyle: { backgroundColor: colors.paper },
                         }}
                     >
                         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                        <Stack.Screen name="oppskrift/[slug]" options={{ title: '', headerTransparent: true }} />
+                        <Stack.Screen name="oppskrift/[slug]" options={{ title: '' }} />
                         <Stack.Screen name="utstyr/[slug]" options={{ title: '' }} />
+                        <Stack.Screen name="om" options={{ title: 'Om Pyttogpanne' }} />
+                        <Stack.Screen name="juridisk/[key]" options={{ title: '' }} />
                     </Stack>
                 </ListsProvider>
             </CatalogProvider>

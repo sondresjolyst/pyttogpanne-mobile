@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { Alert, Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useLists, type ShoppingItem } from '../../src/store/lists';
-import { colors, radius, space, type } from '../../src/theme/theme';
+import EmptyState from '../../src/components/EmptyState';
+import { colors, radius, shadow, space, type, TAB_BAR_CLEARANCE } from '../../src/theme/theme';
 
 export default function ShoppingScreen() {
     const { shopping, toggleShoppingItem, removeShoppingItem, clearChecked, clearShopping } = useLists();
@@ -32,13 +33,11 @@ export default function ShoppingScreen() {
             contentContainerStyle={styles.list}
             stickySectionHeadersEnabled={false}
             ListEmptyComponent={
-                <View style={styles.empty}>
-                    <Ionicons name="bag-handle-outline" size={36} color={colors.inkSoft} />
-                    <Text style={styles.emptyTitle}>Handlelisten er tom</Text>
-                    <Text style={styles.emptyText}>
-                        Åpne en oppskrift og legg ingrediensene hit, så har du dem samlet i butikken.
-                    </Text>
-                </View>
+                <EmptyState
+                    icon="bag-handle-outline"
+                    title="Handlelisten er tom"
+                    text="Åpne en oppskrift og legg ingrediensene hit, så har du dem samlet i butikken."
+                />
             }
             ListFooterComponent={
                 shopping.length > 0 ? (
@@ -85,7 +84,7 @@ export default function ShoppingScreen() {
 }
 
 const styles = StyleSheet.create({
-    list: { padding: space.lg, paddingBottom: space.xxl, flexGrow: 1 },
+    list: { padding: space.lg, paddingBottom: TAB_BAR_CLEARANCE, flexGrow: 1 },
     sectionHeader: { ...type.meta, color: colors.moss, marginTop: space.lg, marginBottom: space.sm },
     row: {
         flexDirection: 'row',
@@ -93,11 +92,10 @@ const styles = StyleSheet.create({
         gap: space.md,
         backgroundColor: colors.white,
         borderRadius: radius.md,
-        borderWidth: 1,
-        borderColor: colors.line,
         paddingHorizontal: space.lg,
         paddingVertical: space.md,
         marginBottom: space.sm,
+        ...shadow.card,
     },
     rowMain: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: 32 },
     box: {
@@ -116,13 +114,9 @@ const styles = StyleSheet.create({
     secondaryButton: {
         flex: 1,
         alignItems: 'center',
-        borderRadius: radius.md,
-        borderWidth: 1,
-        borderColor: colors.line,
+        borderRadius: radius.pill,
+        backgroundColor: colors.paperSunk,
         paddingVertical: space.md,
     },
     secondaryButtonText: { ...type.bodyStrong, color: colors.brown },
-    empty: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.sm, padding: space.xl },
-    emptyTitle: { ...type.heading, color: colors.ink },
-    emptyText: { ...type.body, color: colors.inkSoft, textAlign: 'center' },
 });
