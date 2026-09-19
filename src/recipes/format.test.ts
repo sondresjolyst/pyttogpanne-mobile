@@ -25,11 +25,14 @@ const recipe = (overrides: Partial<Recipe> = {}): Recipe => ({
     tips: null,
     coverImageId: null,
     isPublished: true,
+    isAdvertising: false,
+    advertiser: null,
     publishedAt: '2026-01-01T00:00:00Z',
     updatedAt: '2026-01-01T00:00:00Z',
     categories: [],
     ingredients: [],
     steps: [],
+    images: [],
     ...overrides,
 });
 
@@ -97,13 +100,30 @@ describe('groupIngredients', () => {
         expect(groups[1].rows.map(row => row.id)).toEqual([2, 3]);
     });
 
-    it('does not merge two runs that share a heading but are separated', () => {
+    it('collects rows that share a heading even when they were entered apart', () => {
         const groups = groupIngredients([
             ingredient({ id: 1, groupName: 'Panna' }),
             ingredient({ id: 2, groupName: 'Dressing' }),
             ingredient({ id: 3, groupName: 'Panna' }),
         ]);
-        expect(groups).toHaveLength(3);
+        expect(groups.map(group => group.heading)).toEqual(['Panna', 'Dressing']);
+        expect(groups[0].rows.map(row => row.id)).toEqual([1, 3]);
+    });
+
+    it('keeps ungrouped rows together in the section they first appeared in', () => {
+        const groups = groupIngredients([
+            ingredient({ id: 1 }),
+            ingredient({ id: 2, groupName: 'Dressing' }),
+            ingredient({ id: 3 }),
+        ]);
+        expect(groups.map(group => group.heading)).toEqual([null, 'Dressing']);
+        expect(groups[0].rows.map(row => row.id)).toEqual([1, 3]);
+    });
+
+    it('treats a heading of spaces as no heading', () => {
+        const groups = groupIngredients([ingredient({ id: 1, groupName: '   ' }), ingredient({ id: 2 })]);
+        expect(groups).toHaveLength(1);
+        expect(groups[0].heading).toBeNull();
     });
 });
 

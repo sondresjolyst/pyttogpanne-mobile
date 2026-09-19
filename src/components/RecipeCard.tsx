@@ -1,10 +1,12 @@
+import { memo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { imageUrl } from '../api/client';
 import type { Recipe } from '../api/types';
 import { summaryLine } from '../recipes/format';
-import { colors, radius, space, type } from '../theme/theme';
+import AdvertisingLabel from './AdvertisingLabel';
+import { colors, radius, shadow, space, type } from '../theme/theme';
 
 interface Props {
     recipe: Recipe;
@@ -13,7 +15,7 @@ interface Props {
     onToggleFavourite: () => void;
 }
 
-export default function RecipeCard({ recipe, onPress, isFavourite, onToggleFavourite }: Props) {
+function RecipeCard({ recipe, onPress, isFavourite, onToggleFavourite }: Props) {
     return (
         <Pressable
             onPress={onPress}
@@ -51,6 +53,7 @@ export default function RecipeCard({ recipe, onPress, isFavourite, onToggleFavou
             </View>
 
             <View style={styles.body}>
+                {recipe.isAdvertising && <AdvertisingLabel advertiser={recipe.advertiser} compact />}
                 <Text style={styles.title} numberOfLines={2}>{recipe.title}</Text>
                 <Text style={styles.meta}>{summaryLine(recipe)}</Text>
                 {recipe.intro ? <Text style={styles.intro} numberOfLines={2}>{recipe.intro}</Text> : null}
@@ -59,25 +62,26 @@ export default function RecipeCard({ recipe, onPress, isFavourite, onToggleFavou
     );
 }
 
+export default memo(RecipeCard);
+
 const styles = StyleSheet.create({
     card: {
         backgroundColor: colors.white,
-        borderRadius: radius.md,
+        borderRadius: radius.lg,
         overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: colors.line,
         marginBottom: space.lg,
+        ...shadow.card,
     },
-    pressed: { opacity: 0.85 },
+    pressed: { transform: [{ scale: 0.99 }], opacity: 0.95 },
     imageBox: { position: 'relative' },
-    image: { width: '100%', aspectRatio: 16 / 10, backgroundColor: colors.paperSunk },
+    image: { width: '100%', aspectRatio: 3 / 2, backgroundColor: colors.paperSunk },
     imageEmpty: { alignItems: 'center', justifyContent: 'center' },
     favourite: {
         position: 'absolute',
-        top: space.sm,
-        right: space.sm,
-        backgroundColor: 'rgba(36, 28, 20, 0.45)',
-        borderRadius: radius.lg,
+        top: space.md,
+        right: space.md,
+        backgroundColor: 'rgba(42, 32, 23, 0.4)',
+        borderRadius: radius.pill,
         padding: space.sm,
     },
     body: { padding: space.lg, gap: space.xs },

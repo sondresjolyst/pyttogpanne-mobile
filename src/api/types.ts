@@ -24,6 +24,13 @@ export interface RecipeStep {
     contentImageId: string | null;
 }
 
+export interface GalleryImage {
+    id: number;
+    contentImageId: string;
+    sortOrder: number;
+    caption: string | null;
+}
+
 export interface Recipe {
     id: number;
     slug: string;
@@ -37,17 +44,32 @@ export interface Recipe {
     tips: string | null;
     coverImageId: string | null;
     isPublished: boolean;
+    isAdvertising: boolean;
+    advertiser: string | null;
     publishedAt: string | null;
     updatedAt: string;
     categories: RecipeCategory[];
     ingredients: RecipeIngredient[];
     steps: RecipeStep[];
+    images: GalleryImage[];
 }
 
 export interface RecipeSync {
     serverTime: string;
     recipes: Recipe[];
     deletedSlugs: string[];
+}
+
+export const LEGAL_KEYS = ['terms', 'privacy', 'cookies'] as const;
+
+export type LegalKey = (typeof LEGAL_KEYS)[number];
+
+export interface LegalPage {
+    key: LegalKey;
+    locale: string;
+    title: string;
+    bodyMarkdown: string;
+    updatedAt: string;
 }
 
 export type GearKind = 'Utstyr' | 'Tips';
@@ -59,8 +81,11 @@ export interface GearItem {
     kind: GearKind;
     summary: string | null;
     body: string;
-    contentImageId: string | null;
+    coverImageId: string | null;
+    images: GalleryImage[];
     sortOrder: number;
     isPublished: boolean;
+    isAdvertising: boolean;
+    advertiser: string | null;
     updatedAt: string;
 }

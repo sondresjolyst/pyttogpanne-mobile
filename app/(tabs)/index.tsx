@@ -1,11 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { FlatList, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import RecipeCard from '../../src/components/RecipeCard';
 import { useCatalog } from '../../src/store/catalog';
 import { useLists } from '../../src/store/lists';
-import { colors, radius, space, type } from '../../src/theme/theme';
+import EmptyState from '../../src/components/EmptyState';
+import { colors, radius, shadow, space, type, TAB_BAR_CLEARANCE } from '../../src/theme/theme';
+
+const ALL_CATEGORIES = { id: 0, key: '', name: 'Alle', sortOrder: -1 };
 
 export default function RecipesScreen() {
     const router = useRouter();
@@ -13,6 +16,10 @@ export default function RecipesScreen() {
     const { isFavourite, toggleFavourite } = useLists();
     const [search, setSearch] = useState('');
     const [categoryKey, setCategoryKey] = useState<string | null>(null);
+
+    const chips = useMemo(() => [ALL_CATEGORIES, ...categories], [categories]);
+
+    const openRecipe = useCallback((slug: string) => router.push(`/oppskrift/${slug}`), [router]);
 
     const visible = useMemo(() => {
         const term = search.trim().toLowerCase();
@@ -54,7 +61,7 @@ export default function RecipesScreen() {
                         <FlatList
                             horizontal
                             showsHorizontalScrollIndicator={false}
-                            data={[{ id: 0, key: '', name: 'Alle', sortOrder: -1 }, ...categories]}
+                            data={chips}
                             keyExtractor={category => category.key || 'alle'}
                             contentContainerStyle={styles.chips}
                             renderItem={({ item }) => {
@@ -80,30 +87,26 @@ export default function RecipesScreen() {
                 </View>
             }
             ListEmptyComponent={
-                <View style={styles.empty}>
-                    {state === 'loading' ? (
-                        <Text style={styles.emptyText}>Henter oppskrifter…</Text>
-                    ) : state === 'offline' ? (
-                        <>
-                            <Ionicons name="cloud-offline-outline" size={36} color={colors.inkSoft} />
-                            <Text style={styles.emptyTitle}>Ingen oppskrifter lagret</Text>
-                            <Text style={styles.emptyText}>
-                                Koble til nett én gang, så er oppskriftene med deg på tur uten dekning.
-                            </Text>
-                        </>
-                    ) : (
-                        <>
-                            <Ionicons name="search-outline" size={36} color={colors.inkSoft} />
-                            <Text style={styles.emptyTitle}>Ingen treff</Text>
-                            <Text style={styles.emptyText}>Prøv et annet søkeord eller en annen kategori.</Text>
-                        </>
-                    )}
-                </View>
+                state === 'loading' ? (
+                    <EmptyState text="Henter oppskrifter…" />
+                ) : state === 'offline' ? (
+                    <EmptyState
+                        icon="cloud-offline-outline"
+                        title="Ingen oppskrifter lagret"
+                        text="Koble til nett én gang, så er oppskriftene med deg på tur uten dekning."
+                    />
+                ) : (
+                    <EmptyState
+                        icon="search-outline"
+                        title="Ingen treff"
+                        text="Prøv et annet søkeord eller en annen kategori."
+                    />
+                )
             }
             renderItem={({ item }) => (
                 <RecipeCard
                     recipe={item}
-                    onPress={() => router.push(`/oppskrift/${item.slug}`)}
+                    onPress={() => openRecipe(item.slug)}
                     isFavourite={isFavourite(item.slug)}
                     onToggleFavourite={() => toggleFavourite(item.slug)}
                 />
@@ -113,34 +116,28 @@ export default function RecipesScreen() {
 }
 
 const styles = StyleSheet.create({
-    list: { padding: space.lg, paddingBottom: space.xxl },
+    list: { padding: space.lg, paddingBottom: TAB_BAR_CLEARANCE },
     header: { gap: space.md, marginBottom: space.lg },
     searchBox: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: space.sm,
         backgroundColor: colors.white,
-        borderRadius: radius.md,
-        borderWidth: 1,
-        borderColor: colors.line,
-        paddingHorizontal: space.md,
-        height: 46,
+        borderRadius: radius.pill,
+        paddingHorizontal: space.lg,
+        height: 48,
+        ...shadow.card,
     },
     searchInput: { flex: 1, ...type.body, color: colors.ink },
     chips: { gap: space.sm, paddingVertical: space.xs },
     chip: {
         paddingHorizontal: space.lg,
         paddingVertical: space.sm,
-        borderRadius: radius.lg,
-        borderWidth: 1,
-        borderColor: colors.line,
-        backgroundColor: colors.white,
+        borderRadius: radius.pill,
+        backgroundColor: colors.paperSunk,
     },
     chipActive: { backgroundColor: colors.brown, borderColor: colors.brown },
     chipText: { ...type.meta, color: colors.inkSoft },
     chipTextActive: { color: colors.paper },
     stale: { ...type.meta, color: colors.ember },
-    empty: { alignItems: 'center', gap: space.sm, paddingVertical: space.xxl },
-    emptyTitle: { ...type.heading, color: colors.ink },
-    emptyText: { ...type.body, color: colors.inkSoft, textAlign: 'center', paddingHorizontal: space.xl },
 });
