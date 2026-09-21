@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.1](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.0.0...v1.0.1) (2026-09-21)
+
+
+### Dependencies
+
+* **npm:** bump `eslint` from 9.39.5 to 10.10.0 ([#10](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/10)) ([1761f9e](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1761f9e90b39a29389cd7578c2ba6bfa6575e886))
+* **npm:** bump `expo-router` from 57.0.22 to 58.0.0 ([#8](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/8)) ([199841c](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/199841c7faa22d35c630e0b10b2ba75f2004c4e8))
+* **npm:** bump `typescript` from 6.0.3 to 7.0.2 ([#12](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/12)) ([58cabd7](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/58cabd790d99c8f7aa39d33f86329ae3aa399e75))
+* **npm:** bump the react-native group across 1 directory with 3 updates ([#14](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/14)) ([38219ba](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/38219ba47ed75cb91eae580e203eb65c4c9fe3de))
+
 ## 1.0.0 (2026-09-19)
 
 
