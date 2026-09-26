@@ -7,6 +7,7 @@ import { LEGAL_KEYS, type LegalKey } from '../src/api/types';
 import { colors, radius, shadow, space, type, TAB_BAR_CLEARANCE } from '../src/theme/theme';
 
 const INSTAGRAM = 'https://www.instagram.com/pyttogpanne/';
+const MAKER = 'https://www.sjolystinnovation.no/';
 
 const FALLBACK_TITLES: Record<LegalKey, string> = {
     terms: 'Vilkår',
@@ -64,7 +65,9 @@ export default function AboutScreen() {
                     : 'Oppskriftene lagres på telefonen, så de virker uten dekning.'}
             </Text>
 
-            <Text style={styles.credit}>Drives av Sjølyst Innovation AS</Text>
+            <Pressable onPress={() => Linking.openURL(MAKER)} accessibilityRole="link" hitSlop={8}>
+                <Text style={styles.credit}>Drives av Sjølyst Innovation AS</Text>
+            </Pressable>
         </ScrollView>
     );
 }
