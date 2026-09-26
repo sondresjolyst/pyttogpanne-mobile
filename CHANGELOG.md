@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.0.1...v1.0.2) (2026-09-26)
+
+
+### Bug Fixes
+
+* link the maker credit ([#17](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/17)) ([1d00aba](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1d00aba719f32204128e82e225af8fba1a550ea3))
+
 ## [1.0.1](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.0.0...v1.0.1) (2026-09-21)
 
 
