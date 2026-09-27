@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.3](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.0.2...v1.0.3) (2026-09-27)
+
+
+### Dependencies
+
+* **npm:** bump eslint from 10.10.0 to 10.11.0 in the eslint group ([#22](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/22)) ([2f5b2b8](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/2f5b2b87f4b2f1c0c118e06f2b060c46095a7357))
+* **npm:** bump jest from 30.5.1 to 30.5.2 in the testing group ([#23](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/23)) ([d34af68](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/d34af6822467528d4ca7ca44046665e6d028bab2))
+* **npm:** bump the react group across 1 directory with 3 updates ([#19](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/19)) ([265cc02](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/265cc02b1c386185a8a76b6b03f878d7763f34a3))
+
 ## [1.0.2](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.0.1...v1.0.2) (2026-09-26)
 
 
