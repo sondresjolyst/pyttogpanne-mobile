@@ -51,7 +51,7 @@ export default function ShoppingScreen() {
                             <Text style={styles.secondaryButtonText}>Tøm listen</Text>
                         </Pressable>
                     </View>
-                ) : null
+                ) : undefined
             }
             renderSectionHeader={({ section }) => <Text style={styles.sectionHeader}>{section.title}</Text>}
             renderItem={({ item }) => (
