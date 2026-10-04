@@ -19,7 +19,7 @@
 - `versionCode` is `major*10000 + minor*100 + patch`. It stays monotonic only while minor and patch are below 100.
 - Play already holds version 1.0.0 at `versionCode` 1. Every upload must exceed it.
 - The repository is public. Never upload the built `.aab` as a workflow artifact.
-- Secrets are passed by name. `secrets: inherit` is forbidden.
+- Secrets are environment secrets, never repository secrets, and `secrets: inherit` is forbidden. The build job declares `environment: google-play-testing` and the promote job declares `environment: google-play-production`, and each reads its environment's secrets directly. `on.workflow_call` does not support the `environment` keyword, so no `secrets:` block appears in any workflow.
 - Secret names are exactly `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`.
 - `EXPO_PUBLIC_API_URL` for production builds is `https://pyttogpanne-api.prod.tumogroup.com/api`.
 - Every action is pinned to a commit SHA with the version in a trailing comment, matching the existing workflows.
@@ -291,17 +291,6 @@ on:
         type: string
         required: false
         default: alpha
-    secrets:
-      ANDROID_KEYSTORE_BASE64:
-        required: true
-      ANDROID_KEYSTORE_PASSWORD:
-        required: true
-      ANDROID_KEY_ALIAS:
-        required: true
-      ANDROID_KEY_PASSWORD:
-        required: true
-      GOOGLE_PLAY_SERVICE_ACCOUNT_JSON:
-        required: true
   workflow_dispatch:
     inputs:
       track:
@@ -321,6 +310,7 @@ jobs:
     name: Build and upload
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    environment: google-play-testing
     permissions:
       contents: read
     env:
@@ -376,6 +366,15 @@ jobs:
 
       - name: Generate the native project
         run: npx expo prebuild --platform android --no-install
+
+      - name: Confirm the version code reached the native project
+        env:
+          VERSION_CODE: ${{ steps.version.outputs.code }}
+        run: |
+          if ! grep -q "versionCode $VERSION_CODE" android/app/build.gradle; then
+            echo "::error::app.json carried versionCode $VERSION_CODE but prebuild did not write it into android/app/build.gradle. Building now would produce a bundle Play rejects as a duplicate."
+            exit 1
+          fi
 
       - name: Restore the upload keystore
         env:
@@ -491,13 +490,9 @@ Append to the `jobs:` block of `.github/workflows/release.yml`, as a sibling of 
       contents: read
     with:
       track: alpha
-    secrets:
-      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-      GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
 ```
+
+No `secrets:` block is needed. The called workflow's `build` job declares `environment: google-play-testing` and reads that environment's secrets directly, and `on.workflow_call` does not support the `environment` keyword so they could not be passed from here anyway.
 
 The existing `push` trigger on `main` is kept. A merge of the release pull request is a human push, so the rule that `GITHUB_TOKEN` events do not start new workflow runs does not apply. A `release: published` trigger would never fire, because release-please publishes as `github-actions[bot]`.
 

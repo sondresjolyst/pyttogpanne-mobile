@@ -161,6 +161,23 @@ The scheme stays monotonic while minor and patch remain below 100.
 `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`,
 `ANDROID_KEY_PASSWORD` and `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`.
 
+These are environment secrets, never repository secrets. All five live in a
+`google-play-testing` environment that the build job declares, and the Play
+service account key is duplicated into `google-play-production` for the
+promotion job. Both environments restrict deployments to `main`.
+
+Repository scope was the original design and it was wrong. A repository
+secret is readable by a workflow run on any branch, so anyone with write
+access could have pushed a branch and read the upload keystore without
+passing any gate. Environment scope removes that path: a branch cannot
+deploy to either environment, and a workflow that drops the `environment:`
+line simply gets no credentials.
+
+A called reusable workflow can declare `environment:` on its job and read
+that environment's secrets directly. `on.workflow_call` does not support the
+`environment` keyword, so environment secrets cannot be passed from a
+caller, which is why no `secrets:` block appears in either workflow.
+
 Scope the Play service account to releasing to testing tracks for this app
 only, not account administration. The worst case for a compromised release
 path is then an unwanted alpha upload, which can be halted in the Console.

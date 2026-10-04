@@ -34,6 +34,10 @@ In Google Cloud Console, create a service account and enable the Google Play And
 
 ## 4. Add the repository secrets
 
+These are environment secrets, not repository secrets. Create them inside the environments from section 5, never at repository level. A repository secret is readable by a workflow on any branch, which would let a pushed branch read the upload keystore without passing any gate.
+
+Add all five to `google-play-testing`:
+
 | Secret | Value |
 | --- | --- |
 | `ANDROID_KEYSTORE_BASE64` | output of `base64 -w0 upload.jks` |
@@ -42,13 +46,27 @@ In Google Cloud Console, create a service account and enable the Google Play And
 | `ANDROID_KEY_PASSWORD` | key password |
 | `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | the whole service account JSON |
 
-## 5. Create the production environment
+Add one to `google-play-production`:
 
-Create an environment named `google-play-production` and add yourself as a required reviewer. Leave prevent self-review unchecked. With a single maintainer it would otherwise be impossible to approve a deployment.
+| Secret | Value |
+| --- | --- |
+| `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | the same service account JSON |
 
-Set the environment's deployment branch rule to allow `main` only. Without that rule, the environment will approve a promotion run dispatched from any branch, and the required reviewer becomes the only thing standing between a stray branch and the Play production track.
+Promotion moves a build that Play already holds, so it signs nothing and needs no keystore. The service account key is deliberately duplicated, because environment secrets do not cross environments.
 
-Also enable branch protection on `main`. This is not a separate concern from the environment setup, it is part of the production gate. The approval requirement and the branch restriction above both live in the workflow files, and those files are themselves content in the repository. A branch that can change them can walk around the gate they describe, so `main` needs its own protection for the gate to mean anything.
+## 5. Create the two environments
+
+Both already exist. This section records what they are for and how they are configured, so the settings can be checked or rebuilt.
+
+`google-play-testing` holds the five secrets the build needs. It has no required reviewer, because an alpha release on every release-please release is meant to be automatic. Its deployment branch rule allows `main` only.
+
+`google-play-production` gates promotion. It has you as a required reviewer, with prevent self-review left off, because with a single maintainer it would otherwise be impossible to approve a deployment. Its deployment branch rule also allows `main` only.
+
+The branch rules are what make the secrets unreachable from a pushed branch. A workflow on another branch cannot deploy to either environment, so it cannot read the keystore or the Play key, and a branch that deletes the `environment:` line gets no secrets at all rather than falling back to repository scope.
+
+Both environments were created with `can_admins_bypass` at its default of true, so a repository admin can skip the production approval. Set it to false if you want the gate to bind you as well.
+
+Branch protection on `main` is still worth enabling, so the workflow files themselves cannot be changed without review, but it is no longer what keeps the credentials out of reach.
 
 ## 6. First run
 
@@ -64,7 +82,11 @@ Play holds version 1.0.0 at version code 1. Versions 1.0.1 through 1.0.4 were ta
 
 ## 7.5. How production is reached
 
-The build workflow cannot upload to production. Its first step fails the job if the resolved track is `production`, and its dispatch input offers only `internal`, `alpha` and `beta`. For the workflow files as they exist on `main`, production is reached only by running `promote-production.yml`, which is gated by the `google-play-production` environment and its required reviewer. That qualifier matters, because the workflow files are what enforce the gate, and anyone with write access could otherwise push a branch that removes the `environment:` line and dispatch that instead. The deployment branch rule and the branch protection from section 5 are what keep the claim true, by stopping a changed workflow on another branch from ever reaching the environment or the credentials it guards. Its `from_track` input defaults to `alpha`, which is correct while the build is on closed testing. Change that default to `beta` when open testing starts.
+The build workflow cannot upload to production. Three independent things stop it. Its first step fails the job if the resolved track is `production`. Its dispatch input offers only `internal`, `alpha` and `beta`. And the `upload` lane in `fastlane/Fastfile` refuses any track outside that same list, which also closes the default, because `upload_to_play_store` would otherwise fall back to `production` if the track argument went missing.
+
+Production is reached only by running `promote-production.yml`, which is gated by the `google-play-production` environment and its required reviewer. A workflow pushed to another branch cannot route around this, because both environments restrict deployments to `main` and the secrets live only inside them. Deleting the `environment:` line on a branch does not help, it just means no credentials at all.
+
+Its `from_track` input defaults to `alpha`, which is correct while the build is on closed testing. Change that default to `beta` when open testing starts.
 
 ## 8. Expected failures
 
