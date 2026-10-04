@@ -15,4 +15,22 @@ platform :android do
       skip_upload_screenshots: true
     )
   end
+
+  desc "Promote a version code that is already on a testing track to production"
+  lane :promote_production do |options|
+    upload_to_play_store(
+      package_name: "no.pyttogpanne.app",
+      version_code: options[:version_code].to_i,
+      track: options[:from_track],
+      track_promote_to: "production",
+      track_promote_release_status: "completed",
+      json_key: options[:json_key],
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
 end

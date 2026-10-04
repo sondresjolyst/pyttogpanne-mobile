@@ -1,0 +1,50 @@
+name: 🚀 Promote to production
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_code:
+        description: Version code already live on the source track
+        type: string
+        required: true
+      from_track:
+        description: Track to promote from
+        type: string
+        required: false
+        default: beta
+
+permissions: {}
+
+jobs:
+  promote:
+    name: Promote
+    runs-on: ubuntu-latest
+    environment: google-play-production
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        with:
+          ruby-version: '3.3'
+          bundler-cache: false
+
+      - name: Install fastlane
+        run: bundle install --jobs 4 --retry 3
+
+      - name: Promote
+        env:
+          PLAY_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          VERSION_CODE: ${{ inputs.version_code }}
+          FROM_TRACK: ${{ inputs.from_track }}
+        run: |
+          key="$(mktemp)"
+          trap 'rm -f "$key"' EXIT
+          printf '%s' "$PLAY_JSON" > "$key"
+          bundle exec fastlane android promote_production \
+            version_code:"$VERSION_CODE" \
+            from_track:"$FROM_TRACK" \
+            json_key:"$key"
