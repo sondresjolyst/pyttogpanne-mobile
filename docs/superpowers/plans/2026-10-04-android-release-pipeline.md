@@ -26,6 +26,9 @@
 - The four signing property names are exactly `android.injected.signing.store.file`, `android.injected.signing.store.password`, `android.injected.signing.store.key.alias`, `android.injected.signing.store.key.password`.
 - Never interpolate an expression directly inside a `run:` block. Pass values through `env:` instead. This repository is public and interpolation in a shell body is a script injection vector.
 - Commit messages contain no em dashes and no semicolons, per `CLAUDE.md`.
+- fastlane is pinned to exactly `2.240.1`. There is no `Gemfile.lock`, so CI uses `bundler-cache: false` plus an explicit `bundle install`.
+- Every `ruby/setup-ruby` step must set `ruby-version: '3.3'`. The action fails when it can find no version source, and this repository provides none.
+- Local tooling available for verification is `node`, `npx`, `jq` 1.8.2 and `git`. Ruby, bundler and PyYAML are absent. Validate YAML with `npx -y js-yaml` piped to `jq`, never with `python -c "import yaml"`.
 
 ## Review Focus
 
@@ -205,7 +208,6 @@ git commit -m "feat: derive the Play version code from the app version"
 
 **Files:**
 - Create: `Gemfile`
-- Create: `Gemfile.lock` (generated)
 - Create: `fastlane/Fastfile`
 - Create: `.github/workflows/android-release.yml`
 - Modify: `.gitignore`
@@ -216,19 +218,19 @@ git commit -m "feat: derive the Play version code from the app version"
 
 - [ ] **Step 1: Declare the fastlane dependency**
 
-Create `Gemfile`:
+Create `Gemfile`, pinning the version exactly:
 
 ```ruby
 source "https://rubygems.org"
 
-gem "fastlane"
+gem "fastlane", "2.240.1"
 ```
 
-- [ ] **Step 2: Generate the lockfile**
+- [ ] **Step 2: Do not generate a lockfile**
 
-Run: `bundle lock`
+There is deliberately no `Gemfile.lock`. Ruby and bundler are absent from the development machine, so no lockfile can be generated locally, and `bundler-cache` keys on one. The exact version pin in Step 1 is what provides determinism instead. CI installs with an explicit `bundle install` step and `bundler-cache: false`.
 
-Expected: `Gemfile.lock` created, pinning fastlane and its dependencies. Commit it so `bundler-cache` has something to cache against.
+Do not run `bundle lock`. It will fail with `bundle: command not found`.
 
 - [ ] **Step 3: Keep fastlane's generated noise out of git**
 
@@ -328,7 +330,11 @@ jobs:
 
       - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
         with:
-          bundler-cache: true
+          ruby-version: '3.3'
+          bundler-cache: false
+
+      - name: Install fastlane
+        run: bundle install --jobs 4 --retry 3
 
       - name: Install dependencies
         run: npm ci
@@ -410,27 +416,20 @@ That form is safe in logs because Actions masks registered secrets. If you take 
 Run:
 
 ```bash
-python -c "import yaml; yaml.safe_load(open('.github/workflows/android-release.yml',encoding='utf-8')); print('ok')"
+npx -y js-yaml .github/workflows/android-release.yml > /dev/null && echo ok
 ```
 
-Expected: `ok`.
+Expected: `ok`. PyYAML is not available on this machine, because the system Python is externally managed under PEP 668. `js-yaml` via `npx` and `jq` cover every YAML check in this plan and need no install.
+
+`ruby-version` is mandatory on the `ruby/setup-ruby` step. The action fails when it can find no version from `ruby-version`, `.ruby-version`, `.tool-versions`, or a `ruby` directive in the `Gemfile`, and this repository has none of those.
 
 - [ ] **Step 7: Verify no shell body interpolates a value**
 
 Run:
 
 ```bash
-python - <<'PY'
-import yaml
-doc = yaml.safe_load(open('.github/workflows/android-release.yml', encoding='utf-8'))
-bad = [
-    step.get('name', '<unnamed>')
-    for job in doc['jobs'].values()
-    for step in job.get('steps', [])
-    if '${{' in step.get('run', '')
-]
-print('BAD:', bad) if bad else print('clean')
-PY
+npx -y js-yaml .github/workflows/android-release.yml \
+  | jq -r '[.jobs[].steps[] | select(.run != null) | select(.run | test("\\$\\{\\{")) | (.name // "<unnamed>")] | if length == 0 then "clean" else "BAD: " + join(", ") end'
 ```
 
 Expected: `clean`. Every expression must sit under `env:`, `with:` or `if:`, never inside a `run:` body. If a step is listed, move the value into `env:` and reference the shell variable instead. Run the same check against the other two workflows as they are created.
@@ -438,7 +437,7 @@ Expected: `clean`. Every expression must sit under `env:`, `with:` or `if:`, nev
 - [ ] **Step 8: Commit**
 
 ```bash
-git add Gemfile Gemfile.lock fastlane/Fastfile .github/workflows/android-release.yml .gitignore
+git add Gemfile fastlane/Fastfile .github/workflows/android-release.yml .gitignore
 git commit -m "feat: add the Android build and Play upload workflow"
 ```
 
@@ -480,10 +479,10 @@ The existing `push` trigger on `main` is kept. A merge of the release pull reque
 Run:
 
 ```bash
-python -c "import yaml; d=yaml.safe_load(open('.github/workflows/release.yml',encoding='utf-8')); print(sorted(d['jobs']))"
+npx -y js-yaml .github/workflows/release.yml | jq -r '.jobs | keys | sort | join(",")'
 ```
 
-Expected: `['android', 'release-please']`.
+Expected: `android,release-please`.
 
 - [ ] **Step 3: Confirm the gate condition is present**
 
@@ -578,7 +577,11 @@ jobs:
 
       - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
         with:
-          bundler-cache: true
+          ruby-version: '3.3'
+          bundler-cache: false
+
+      - name: Install fastlane
+        run: bundle install --jobs 4 --retry 3
 
       - name: Promote
         env:
@@ -602,16 +605,27 @@ The `environment: google-play-production` line is the approval gate. The require
 Run:
 
 ```bash
-python -c "import yaml; d=yaml.safe_load(open('.github/workflows/promote-production.yml',encoding='utf-8')); print(d['jobs']['promote']['environment'])"
+npx -y js-yaml .github/workflows/promote-production.yml | jq -r '.jobs.promote.environment'
 ```
 
 Expected: `google-play-production`.
 
-- [ ] **Step 4: Verify the Fastfile is valid and both lanes are visible**
+Also run the interpolation check from Task 2 Step 7 against this file, substituting its path.
 
-Run: `ruby -c fastlane/Fastfile`
+- [ ] **Step 4: Verify the Fastfile structure**
 
-Expected: `Syntax OK`. If Ruby is not installed locally, run `bundle exec fastlane lanes` instead and confirm both `upload` and `promote_production` are listed.
+Ruby is absent from the development machine, so `ruby -c` and `bundle exec fastlane lanes` are both unavailable. Use a structural check:
+
+```bash
+grep -q 'platform :android do' fastlane/Fastfile \
+  && grep -q 'lane :upload do' fastlane/Fastfile \
+  && grep -q 'lane :promote_production do' fastlane/Fastfile \
+  && [ "$(grep -c '^  lane :' fastlane/Fastfile)" = "2" ] \
+  && [ "$(grep -vE '^[[:space:]]*$' fastlane/Fastfile | tail -1)" = "end" ] \
+  && echo "structure ok"
+```
+
+Expected: `structure ok`. This is weaker than a syntax check. A genuine Ruby syntax error will surface on the first CI run rather than locally. That gap is accepted.
 
 - [ ] **Step 5: Commit**
 
