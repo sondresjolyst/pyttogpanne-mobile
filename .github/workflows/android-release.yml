@@ -23,9 +23,13 @@ on:
     inputs:
       track:
         description: Play track to upload to
-        type: string
+        type: choice
         required: false
         default: alpha
+        options:
+          - internal
+          - alpha
+          - beta
 
 permissions: {}
 
@@ -38,6 +42,15 @@ jobs:
     env:
       EXPO_PUBLIC_API_URL: https://pyttogpanne-api.prod.tumogroup.com/api
     steps:
+      - name: Reject a direct production upload
+        env:
+          TRACK: ${{ inputs.track }}
+        run: |
+          if [ "$TRACK" = "production" ]; then
+            echo "::error::This workflow cannot upload to production. Use promote-production.yml, which is gated by the google-play-production environment."
+            exit 1
+          fi
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
