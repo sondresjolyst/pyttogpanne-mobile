@@ -576,9 +576,13 @@ on:
         required: true
       from_track:
         description: Track to promote from
-        type: string
+        type: choice
         required: false
-        default: beta
+        default: alpha
+        options:
+          - internal
+          - alpha
+          - beta
 
 permissions: {}
 
@@ -590,6 +594,21 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Validate the version code
+        env:
+          VERSION_CODE: ${{ inputs.version_code }}
+        run: |
+          case "$VERSION_CODE" in
+            ''|*[!0-9]*)
+              echo "::error::version_code must be a positive integer, got '$VERSION_CODE'. A non-numeric value is silently coerced to 0 and a value like 1005abc to 1005, which would promote the wrong build to production."
+              exit 1
+              ;;
+          esac
+          if [ "$VERSION_CODE" -eq 0 ]; then
+            echo "::error::version_code must be greater than zero."
+            exit 1
+          fi
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -618,6 +637,10 @@ jobs:
 ```
 
 The `environment: google-play-production` line is the approval gate. The required reviewer is configured in repository settings, not here. Nothing counts days. The wait is however long it takes a human to approve.
+
+The validation step is required, because `version_code` is the input that selects which build goes to every user. The `Fastfile` coerces it with `options[:version_code].to_i`, and Ruby's `.to_i` never raises: a non-numeric value becomes `0` and `1005abc` becomes `1005`. Without the guard, a typo in the dispatch form does not fail, it promotes a different build. The guard runs before `actions/checkout` so it fails before anything else happens. One known gap: a digit string beyond bash's integer width makes `[ -eq ]` error rather than evaluate, so the step falls through without its message. That is not a promotion hazard, since such a value is far beyond any real Play version code and the Play API rejects it cleanly.
+
+`from_track` defaults to `alpha` because that is where the build is today. Change it to `beta` when open testing starts.
 
 - [ ] **Step 3: Verify the workflow parses and the environment is bound**
 
