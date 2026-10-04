@@ -731,7 +731,9 @@ Section six point five, pin the gem tree. There is no `Gemfile.lock`, because Ru
 
 Section seven, current state. Play holds version 1.0.0 at version code 1. Versions 1.0.1 through 1.0.4 were tagged but never uploaded and will not appear in the Console.
 
-Section eight, expected failures. A version code equal to or below one Play already holds is rejected after the build completes, so derive it only with `node scripts/android-version-code.js`. A promotion naming a version code that is not on the source track fails inside fastlane after the approval is granted, which is a wrong input rather than a credential problem.
+Section seven point five, how production is reached. The build workflow cannot upload to production. Its first step fails the job if the resolved track is `production`, and its dispatch input offers only `internal`, `alpha` and `beta`. Production is reached only by running `promote-production.yml`, which is gated by the `google-play-production` environment and its required reviewer. Its `from_track` input defaults to `alpha`, which is correct while the build is on closed testing. Change that default to `beta` when open testing starts.
+
+Section eight, expected failures. A version code equal to or below one Play already holds is rejected after the build completes, so derive it only with `node scripts/android-version-code.js`. A promotion naming a version code that is not on the source track fails inside fastlane after the approval is granted, which is a wrong input rather than a credential problem. A promotion with a non-numeric or zero version code fails immediately, before checkout, with an explicit error, because that input selects which build every user receives.
 
 - [ ] **Step 2: Verify the secret names match the workflows exactly**
 
