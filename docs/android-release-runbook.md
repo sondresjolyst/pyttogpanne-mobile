@@ -46,6 +46,10 @@ In Google Cloud Console, create a service account and enable the Google Play And
 
 Create an environment named `google-play-production` and add yourself as a required reviewer. Leave prevent self-review unchecked. With a single maintainer it would otherwise be impossible to approve a deployment.
 
+Set the environment's deployment branch rule to allow `main` only. Without that rule, the environment will approve a promotion run dispatched from any branch, and the required reviewer becomes the only thing standing between a stray branch and the Play production track.
+
+Also enable branch protection on `main`. This is not a separate concern from the environment setup, it is part of the production gate. The approval requirement and the branch restriction above both live in the workflow files, and those files are themselves content in the repository. A branch that can change them can walk around the gate they describe, so `main` needs its own protection for the gate to mean anything.
+
 ## 6. First run
 
 There is no dry run for a Play upload. Run the Android release workflow manually with `workflow_dispatch` and `track` set to `alpha` before any release depends on it. That run also puts the current version into alpha, which is otherwise skipped.
@@ -60,8 +64,10 @@ Play holds version 1.0.0 at version code 1. Versions 1.0.1 through 1.0.4 were ta
 
 ## 7.5. How production is reached
 
-The build workflow cannot upload to production. Its first step fails the job if the resolved track is `production`, and its dispatch input offers only `internal`, `alpha` and `beta`. Production is reached only by running `promote-production.yml`, which is gated by the `google-play-production` environment and its required reviewer. Its `from_track` input defaults to `alpha`, which is correct while the build is on closed testing. Change that default to `beta` when open testing starts.
+The build workflow cannot upload to production. Its first step fails the job if the resolved track is `production`, and its dispatch input offers only `internal`, `alpha` and `beta`. For the workflow files as they exist on `main`, production is reached only by running `promote-production.yml`, which is gated by the `google-play-production` environment and its required reviewer. That qualifier matters, because the workflow files are what enforce the gate, and anyone with write access could otherwise push a branch that removes the `environment:` line and dispatch that instead. The deployment branch rule and the branch protection from section 5 are what keep the claim true, by stopping a changed workflow on another branch from ever reaching the environment or the credentials it guards. Its `from_track` input defaults to `alpha`, which is correct while the build is on closed testing. Change that default to `beta` when open testing starts.
 
 ## 8. Expected failures
 
 A version code equal to or below one Play already holds is rejected after the build completes, so derive it only with `node scripts/android-version-code.js`. A promotion naming a version code that is not on the source track fails inside fastlane after the approval is granted, which is a wrong input rather than a credential problem. A promotion with a non-numeric or zero version code fails immediately, before checkout, with an explicit error, because that input selects which build every user receives.
+
+A failed upload is the one failure that re-running the job cannot fix. The version code is derived from `expo.version`, so a retry rebuilds the identical version code, and Play rejects it as a duplicate of whatever it already has. Before retrying, check the Play Console to see whether the bundle actually landed on the track. If it did, do not retry at all, cut a new patch release instead, because the version code for the failed run is now spent and can never be uploaded again.
