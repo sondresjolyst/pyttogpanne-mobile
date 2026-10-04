@@ -477,6 +477,8 @@ Append to the `jobs:` block of `.github/workflows/release.yml`, as a sibling of 
     needs: release-please
     if: needs.release-please.outputs.releases_created == 'true'
     uses: ./.github/workflows/android-release.yml
+    permissions:
+      contents: read
     with:
       track: alpha
     secrets:
@@ -488,6 +490,8 @@ Append to the `jobs:` block of `.github/workflows/release.yml`, as a sibling of 
 ```
 
 The existing `push` trigger on `main` is kept. A merge of the release pull request is a human push, so the rule that `GITHUB_TOKEN` events do not start new workflow runs does not apply. A `release: published` trigger would never fire, because release-please publishes as `github-actions[bot]`.
+
+The `permissions` block on this job is required, not decoration. For a normal job, a job-level `permissions` block replaces the workflow-level one, which is why `release-please` can hold `contents: write` under a workflow-level `permissions: {}`. A job that calls a reusable workflow behaves differently: its permissions are a ceiling the called workflow can only narrow. Without `contents: read` here, the `contents: read` that `android-release.yml` declares for its own `build` job cannot be granted, and `actions/checkout` runs with a token that has no scopes. A public repository masks this, because the anonymous clone still succeeds. It breaks as soon as the repository becomes private.
 
 - [ ] **Step 2: Verify the workflow parses and both jobs exist**
 
