@@ -23,6 +23,7 @@ jobs:
   promote:
     name: Promote
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment: google-play-production
     permissions:
       contents: read
