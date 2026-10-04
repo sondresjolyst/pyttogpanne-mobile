@@ -42,7 +42,8 @@
     "preset": "jest-expo",
     "testMatch": [
       "**/*.test.ts",
-      "**/*.test.tsx"
+      "**/*.test.tsx",
+      "**/*.test.js"
     ]
   }
 }
