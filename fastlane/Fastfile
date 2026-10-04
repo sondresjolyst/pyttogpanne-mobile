@@ -1,0 +1,18 @@
+default_platform(:android)
+
+platform :android do
+  desc "Upload the release app bundle to a Play track"
+  lane :upload do |options|
+    upload_to_play_store(
+      package_name: "no.pyttogpanne.app",
+      track: options[:track],
+      aab: "android/app/build/outputs/bundle/release/app-release.aab",
+      json_key: options[:json_key],
+      release_status: "completed",
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end
