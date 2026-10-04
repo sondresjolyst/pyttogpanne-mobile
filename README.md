@@ -83,7 +83,7 @@ src/theme/        colours, spacing, type scale
 
 Merging the release pull request release-please opens ships a signed build to
 Play closed testing. Promoting it to production is a separate
-`🚀 Promote to production` workflow run, behind an approval.
+`🚀 Promote to production` workflow run.
 
 ### How the offline copy works
 
