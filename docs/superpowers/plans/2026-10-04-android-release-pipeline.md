@@ -249,14 +249,21 @@ Create `fastlane/Fastfile`:
 ```ruby
 default_platform(:android)
 
+TESTING_TRACKS = %w[internal alpha beta].freeze
+
 platform :android do
   desc "Upload the release app bundle to a Play track"
   lane :upload do |options|
+    track = options.fetch(:track)
+    unless TESTING_TRACKS.include?(track)
+      UI.user_error!("Refusing to upload to the #{track} track. Production is reached only through the promote_production lane, which is gated by the google-play-production environment.")
+    end
+
     upload_to_play_store(
       package_name: "no.pyttogpanne.app",
-      track: options[:track],
+      track: track,
       aab: "android/app/build/outputs/bundle/release/app-release.aab",
-      json_key: options[:json_key],
+      json_key: options.fetch(:json_key),
       release_status: "completed",
       skip_upload_metadata: true,
       skip_upload_changelogs: true,
@@ -267,7 +274,7 @@ platform :android do
 end
 ```
 
-`version_code` is deliberately not passed here. When uploading an app bundle, fastlane reads it from the bundle itself, and supplying it as well can conflict.
+`version_code` is deliberately not passed here. When uploading an app bundle, fastlane reads it from the bundle itself, and supplying it as well can conflict. The `track` option is fetched rather than read from the hash directly, and validated against `TESTING_TRACKS`, so an omitted or mistyped argument cannot fall through to fastlane's own default, which is `production`.
 
 - [ ] **Step 5: Write the workflow**
 
@@ -313,6 +320,7 @@ jobs:
   build:
     name: Build and upload
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
     env:
@@ -336,7 +344,7 @@ jobs:
           node-version: '23'
           cache: 'npm'
 
-      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: temurin
           java-version: '17'
@@ -354,7 +362,9 @@ jobs:
 
       - name: Derive the version code
         id: version
-        run: echo "code=$(node scripts/android-version-code.js)" >> "$GITHUB_OUTPUT"
+        run: |
+          code="$(node scripts/android-version-code.js)"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
 
       - name: Write the version code into app.json
         env:
@@ -541,13 +551,21 @@ Append inside the `platform :android do` block of `fastlane/Fastfile`:
 ```ruby
   desc "Promote a version code that is already on a testing track to production"
   lane :promote_production do |options|
+    from_track = options.fetch(:from_track)
+    unless TESTING_TRACKS.include?(from_track)
+      UI.user_error!("Refusing to promote from the #{from_track} track.")
+    end
+
+    version_code = options.fetch(:version_code).to_i
+    UI.user_error!("version_code must be a positive integer.") unless version_code.positive?
+
     upload_to_play_store(
       package_name: "no.pyttogpanne.app",
-      version_code: options[:version_code].to_i,
-      track: options[:from_track],
+      version_code: version_code,
+      track: from_track,
       track_promote_to: "production",
       track_promote_release_status: "completed",
-      json_key: options[:json_key],
+      json_key: options.fetch(:json_key),
       skip_upload_aab: true,
       skip_upload_apk: true,
       skip_upload_metadata: true,
@@ -558,7 +576,7 @@ Append inside the `platform :android do` block of `fastlane/Fastfile`:
   end
 ```
 
-No artifact is needed, because promotion references a `versionCode` Play already holds. Play automatically deactivates the release from its previous track on promote.
+No artifact is needed, because promotion references a `versionCode` Play already holds. Play automatically deactivates the release from its previous track on promote. This lane repeats the track allowlist check and adds a second, independent check that `version_code` is a positive integer, since the `Fastfile` should not trust an option just because the calling workflow already validated it.
 
 - [ ] **Step 2: Write the promotion workflow**
 
@@ -590,6 +608,7 @@ jobs:
   promote:
     name: Promote
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment: google-play-production
     permissions:
       contents: read

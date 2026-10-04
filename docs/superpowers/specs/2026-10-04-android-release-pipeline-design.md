@@ -27,7 +27,7 @@ Play App Signing is enabled. The Play Console reports releases signed by
 Play, so Google holds the app signing key and the upload key can be reset.
 
 Version 1.0.0 is live on the closed testing track. The repository is at
-1.0.4, and v1.0.2 through v1.0.4 were tagged without ever being uploaded.
+1.0.4, and v1.0.1 through v1.0.4 were tagged without ever being uploaded.
 Those versions will not appear in the Console, which is accepted.
 
 The repository is public. GitHub hosted runners are therefore free, and
@@ -118,7 +118,9 @@ Steps run on `ubuntu-latest`:
 7. Write the four injected signing properties into `android/gradle.properties`.
 8. `./gradlew :app:bundleRelease`.
 9. `fastlane supply` with the service account key, the package name
-   `no.pyttogpanne.app`, the computed `version_code`, and the `track` input.
+   `no.pyttogpanne.app`, and the `track` input. The computed version code is
+   not passed here, because fastlane reads it from the app bundle itself and
+   supplying it as well can conflict.
 
 `EXPO_PUBLIC_API_URL` is set to the production value currently held in
 `eas.json`, because `prebuild` does not read EAS build profiles.
