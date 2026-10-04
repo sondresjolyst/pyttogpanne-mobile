@@ -9,9 +9,13 @@ on:
         required: true
       from_track:
         description: Track to promote from
-        type: string
+        type: choice
         required: false
-        default: beta
+        default: alpha
+        options:
+          - internal
+          - alpha
+          - beta
 
 permissions: {}
 
@@ -23,6 +27,21 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Validate the version code
+        env:
+          VERSION_CODE: ${{ inputs.version_code }}
+        run: |
+          case "$VERSION_CODE" in
+            ''|*[!0-9]*)
+              echo "::error::version_code must be a positive integer, got '$VERSION_CODE'. A non-numeric value is silently coerced to 0 and a value like 1005abc to 1005, which would promote the wrong build to production."
+              exit 1
+              ;;
+          esac
+          if [ "$VERSION_CODE" -eq 0 ]; then
+            echo "::error::version_code must be greater than zero."
+            exit 1
+          fi
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
