@@ -299,9 +299,13 @@ on:
     inputs:
       track:
         description: Play track to upload to
-        type: string
+        type: choice
         required: false
         default: alpha
+        options:
+          - internal
+          - alpha
+          - beta
 
 permissions: {}
 
@@ -314,6 +318,15 @@ jobs:
     env:
       EXPO_PUBLIC_API_URL: https://pyttogpanne-api.prod.tumogroup.com/api
     steps:
+      - name: Reject a direct production upload
+        env:
+          TRACK: ${{ inputs.track }}
+        run: |
+          if [ "$TRACK" = "production" ]; then
+            echo "::error::This workflow cannot upload to production. Use promote-production.yml, which is gated by the google-play-production environment."
+            exit 1
+          fi
+
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -390,6 +403,8 @@ jobs:
 ```
 
 The keystore and the service account key are written to the runner filesystem rather than passed as arguments, so neither appears in a process listing. The service account key is removed by a `trap` so it goes even if fastlane fails.
+
+The first step is a security gate, not boilerplate. Without it, anyone with write access could dispatch this workflow with `track: production` and ship straight to users, bypassing the `google-play-production` environment and the required reviewer that Task 4 exists to provide. The `choice` type closes the dispatch path, and the guard closes the `workflow_call` path, where `choice` is not a valid input type. It must stay the first step so it fails before any secret is decoded.
 
 The spec records an open risk here. The `-P` command line form of the injected signing properties is documented, while writing the same keys into `gradle.properties` is inferred from Gradle treating any entry there as a project property. If the first run produces an unsigned or debug-signed bundle, or Gradle reports no signing config for the release variant, switch the build step to pass them as arguments instead:
 
@@ -684,6 +699,8 @@ Section four, add the repository secrets:
 Section five, create the production environment. Create an environment named `google-play-production` and add yourself as a required reviewer. Leave prevent self-review unchecked. With a single maintainer it would otherwise be impossible to approve a deployment.
 
 Section six, first run. There is no dry run for a Play upload. Run the Android release workflow manually with `workflow_dispatch` and `track` set to `alpha` before any release depends on it. That run also puts the current version into alpha, which is otherwise skipped.
+
+Section six point five, pin the gem tree. There is no `Gemfile.lock`, because Ruby and bundler are not installed on the development machine. Until one exists, `bundle install` re-resolves fastlane's transitive dependencies on every run with no integrity pinning, inside the job that holds the upload keystore and the Play service account key. Close that window on the first successful run: open the run's `Install fastlane` step log, which ends with the resolved versions, or rerun that job with debug logging to capture the generated lockfile, then commit a `Gemfile.lock` matching it and flip the two `ruby/setup-ruby` steps to `bundler-cache: true`. The exposure in the meantime is narrow but real: the `bundle install` step carries no secrets in its environment, so a malicious gem would have to survive to the `bundle exec fastlane` step to reach the Play key.
 
 Section seven, current state. Play holds version 1.0.0 at version code 1. Versions 1.0.1 through 1.0.4 were tagged but never uploaded and will not appear in the Console.
 
