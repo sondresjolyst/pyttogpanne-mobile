@@ -81,17 +81,9 @@ src/theme/        colours, spacing, type scale
 
 ### Releases
 
-release-please opens a release pull request as commits land on `main`. Merging
-it tags the version and bumps `expo.version` in `app.json`, which builds a
-signed Android bundle and uploads it to the Play closed testing track.
-
-Reaching production is a separate, deliberate step. Run the
-`🚀 Promote to production` workflow with the version code from the Play Console.
-It waits for an approval before anything reaches users, and the build workflow
-cannot publish to production at all.
-
-Version codes are derived from the version as `major*10000 + minor*100 + patch`,
-so minor and patch have to stay below 100.
+Merging the release pull request release-please opens ships a signed build to
+Play closed testing. Promoting it to production is a separate
+`🚀 Promote to production` workflow run, behind an approval.
 
 ### How the offline copy works
 
