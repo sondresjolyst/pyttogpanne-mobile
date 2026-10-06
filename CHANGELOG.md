@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.0.4...v1.0.5) (2026-10-06)
+
+
+### Dependencies
+
+* **npm:** bump the react group with 3 updates ([#37](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/37)) ([4e14ded](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/4e14ded9579a1420ab13b7562893cc7e2e0c7a96))
+
 ## [1.0.4](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.0.3...v1.0.4) (2026-10-04)
 
 
