@@ -2,7 +2,7 @@ import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'rea
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { imageUrl } from '../../src/api/client';
+import { THUMB_WIDTH, imageSource } from '../../src/api/client';
 import AdvertisingLabel from '../../src/components/AdvertisingLabel';
 import { useCatalog } from '../../src/store/catalog';
 import EmptyState from '../../src/components/EmptyState';
@@ -32,7 +32,7 @@ export default function GearScreen() {
                     style={({ pressed }) => [styles.row, pressed && styles.pressed]}
                 >
                     {item.coverImageId ? (
-                        <Image source={{ uri: imageUrl(item.coverImageId, 240) }} style={styles.thumb} contentFit="cover" />
+                        <Image source={imageSource(item.coverImageId, THUMB_WIDTH)} style={styles.thumb} contentFit="cover" />
                     ) : (
                         <View style={[styles.thumb, styles.thumbEmpty]}>
                             <Ionicons name="hammer-outline" size={20} color={colors.inkSoft} />

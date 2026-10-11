@@ -11,6 +11,16 @@ export const api = axios.create({ baseURL, timeout: 15000 });
 export const imageUrl = (id: string, width: number): string =>
     `${baseURL}/content-images/${id}?w=${Math.round(width)}`;
 
+/** The API only serves its resized WebP variants when asked for WebP. Otherwise it sends the full original. */
+export const IMAGE_HEADERS = { Accept: 'image/webp' };
+
+/** Widths shared by the screens and the prefetch, so a prefetched photo is the one a screen asks for. */
+export const COVER_WIDTH = 800;
+export const PHOTO_WIDTH = 1200;
+export const THUMB_WIDTH = 240;
+
+export const imageSource = (id: string, width: number) => ({ uri: imageUrl(id, width), headers: IMAGE_HEADERS });
+
 export const fetchRecipeSync = async (since?: string): Promise<RecipeSync> => {
     const { data } = await api.get<RecipeSync>('/recipes/sync', { params: since ? { since } : undefined });
     return data;
