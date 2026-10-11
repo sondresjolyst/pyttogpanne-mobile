@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "no.pyttogpanne.app"
+      "bundleIdentifier": "no.sjolystinnovation.pyttogpanne"
     },
     "android": {
       "package": "no.sjolystinnovation.pyttogpanne",
