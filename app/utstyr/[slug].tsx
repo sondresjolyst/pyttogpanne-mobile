@@ -5,7 +5,7 @@ import PhotoGallery from '../../src/components/PhotoGallery';
 import AdvertisingLabel from '../../src/components/AdvertisingLabel';
 import { useCatalog } from '../../src/store/catalog';
 import EmptyState from '../../src/components/EmptyState';
-import { colors, radius, space, type, TAB_BAR_CLEARANCE } from '../../src/theme/theme';
+import { colors, space, type, TAB_BAR_CLEARANCE } from '../../src/theme/theme';
 
 export default function GearItemScreen() {
     const { slug } = useLocalSearchParams<{ slug: string }>();

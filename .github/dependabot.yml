@@ -73,3 +73,26 @@ updates:
     default-days: 7
   commit-message:
     prefix: deps(npm)
+  ignore:
+  - dependency-name: react
+    update-types: [version-update:semver-major, version-update:semver-minor]
+  - dependency-name: react-dom
+    update-types: [version-update:semver-major, version-update:semver-minor]
+  - dependency-name: '@types/react'
+    update-types: [version-update:semver-major, version-update:semver-minor]
+  - dependency-name: react-native
+    update-types: [version-update:semver-major, version-update:semver-minor]
+  - dependency-name: react-native-*
+    update-types: [version-update:semver-major, version-update:semver-minor]
+  - dependency-name: expo
+    update-types: [version-update:semver-major]
+  - dependency-name: expo-*
+    update-types: [version-update:semver-major]
+  - dependency-name: jest
+    update-types: [version-update:semver-major]
+  - dependency-name: '@types/jest'
+    update-types: [version-update:semver-major]
+  - dependency-name: typescript
+    update-types: [version-update:semver-major]
+  - dependency-name: eslint
+    update-types: [version-update:semver-major]
