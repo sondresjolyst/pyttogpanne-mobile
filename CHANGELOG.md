@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.0.4...v1.1.0) (2026-10-11)
+
+
+### Features
+
+* add the Android release pipeline ([#35](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/35)) ([6f3065e](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/6f3065eacf2d47e89ff1d348513ac273eca3c7dc))
+
+
+### Dependencies
+
+* **npm:** bump the react group with 3 updates ([#37](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/37)) ([4e14ded](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/4e14ded9579a1420ab13b7562893cc7e2e0c7a96))
+
 ## [1.0.4](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.0.3...v1.0.4) (2026-10-04)
 
 
