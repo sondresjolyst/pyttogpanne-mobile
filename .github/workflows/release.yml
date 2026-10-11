@@ -21,6 +21,7 @@ jobs:
     needs: release-please
     if: needs.release-please.outputs.releases_created == 'true'
     uses: ./.github/workflows/android-release.yml
+    secrets: inherit
     permissions:
       contents: read
     with:
