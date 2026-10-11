@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.1.0...v1.1.1) (2026-10-11)
+
+
+### Bug Fixes
+
+* enable R8 obfuscation for Android release builds ([#42](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/42)) ([f1d4b23](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/f1d4b2394dc493080976c011cab8759449074c76))
+
 ## [1.1.0](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.0.4...v1.1.0) (2026-10-11)
 
 
