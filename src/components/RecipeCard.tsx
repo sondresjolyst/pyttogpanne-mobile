@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
-import { imageUrl } from '../api/client';
+import { COVER_WIDTH, imageSource } from '../api/client';
 import type { Recipe } from '../api/types';
 import { summaryLine } from '../recipes/format';
 import AdvertisingLabel from './AdvertisingLabel';
@@ -26,7 +26,7 @@ function RecipeCard({ recipe, onPress, isFavourite, onToggleFavourite }: Props) 
             <View style={styles.imageBox}>
                 {recipe.coverImageId ? (
                     <Image
-                        source={{ uri: imageUrl(recipe.coverImageId, 800) }}
+                        source={imageSource(recipe.coverImageId, COVER_WIDTH)}
                         style={styles.image}
                         contentFit="cover"
                         transition={120}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FlatList, StyleSheet, Text, View, useWindowDimensions, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { Image } from 'expo-image';
-import { imageUrl } from '../api/client';
+import { PHOTO_WIDTH, imageSource } from '../api/client';
 import type { GalleryImage } from '../api/types';
 import { colors, space, type } from '../theme/theme';
 
@@ -33,7 +33,7 @@ export default function PhotoGallery({ images }: { images: GalleryImage[] }) {
                 onMomentumScrollEnd={onScroll}
                 renderItem={({ item }) => (
                     <Image
-                        source={{ uri: imageUrl(item.contentImageId, Math.round(width)) }}
+                        source={imageSource(item.contentImageId, PHOTO_WIDTH)}
                         style={[styles.frame, { width, height: width * 0.75 }]}
                         contentFit="cover"
                         transition={150}

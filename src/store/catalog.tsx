@@ -1,7 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Image } from 'expo-image';
-import { fetchCategories, fetchGear, fetchLegalPages, fetchRecipeSync, imageUrl } from '../api/client';
+import {
+    COVER_WIDTH, IMAGE_HEADERS, PHOTO_WIDTH, THUMB_WIDTH,
+    fetchCategories, fetchGear, fetchLegalPages, fetchRecipeSync, imageUrl,
+} from '../api/client';
 import type { GearItem, LegalPage, Recipe, RecipeCategory } from '../api/types';
 import { merge } from './merge';
 
@@ -24,17 +27,19 @@ const EMPTY: Cache = { serverTime: null, recipes: [], categories: [], gear: [], 
  * never opened at home has no picture on the trip, which is exactly when it is needed.
  */
 async function prefetchPhotos(recipes: Recipe[], gear: GearItem[]): Promise<void> {
-    const urls = [
-        ...recipes.flatMap(recipe => recipe.images.map(image => imageUrl(image.contentImageId, 1200))),
-        ...recipes.flatMap(recipe => recipe.steps
-            .filter(step => step.contentImageId != null)
-            .map(step => imageUrl(step.contentImageId!, 1200))),
-        ...gear.flatMap(item => item.images.map(image => imageUrl(image.contentImageId, 1200))),
+    // The lists show covers and thumbnails first, so they go first and the gallery photos wait.
+    const listUrls = [
+        ...recipes.filter(recipe => recipe.coverImageId).map(recipe => imageUrl(recipe.coverImageId!, COVER_WIDTH)),
+        ...gear.filter(item => item.coverImageId).map(item => imageUrl(item.coverImageId!, THUMB_WIDTH)),
     ];
-    if (urls.length === 0) return;
+    const galleryUrls = [
+        ...recipes.flatMap(recipe => recipe.images.map(image => imageUrl(image.contentImageId, PHOTO_WIDTH))),
+        ...gear.flatMap(item => item.images.map(image => imageUrl(image.contentImageId, PHOTO_WIDTH))),
+    ];
 
     try {
-        await Image.prefetch(urls, 'disk');
+        if (listUrls.length > 0) await Image.prefetch(listUrls, { cachePolicy: 'disk', headers: IMAGE_HEADERS });
+        if (galleryUrls.length > 0) await Image.prefetch(galleryUrls, { cachePolicy: 'disk', headers: IMAGE_HEADERS });
     } catch {
         // Best effort: a photo that fails here is fetched on demand instead.
     }
