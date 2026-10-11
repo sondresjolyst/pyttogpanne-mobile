@@ -8,6 +8,17 @@ on:
         type: string
         required: false
         default: alpha
+    secrets:
+      ANDROID_KEYSTORE_BASE64:
+        required: false
+      ANDROID_KEYSTORE_PASSWORD:
+        required: false
+      ANDROID_KEY_ALIAS:
+        required: false
+      ANDROID_KEY_PASSWORD:
+        required: false
+      GOOGLE_PLAY_SERVICE_ACCOUNT_JSON:
+        required: false
   workflow_dispatch:
     inputs:
       track:
