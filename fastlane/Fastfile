@@ -14,6 +14,7 @@ platform :android do
       package_name: "no.pyttogpanne.app",
       track: track,
       aab: "android/app/build/outputs/bundle/release/app-release.aab",
+      mapping: "android/app/build/outputs/mapping/release/mapping.txt",
       json_key: options.fetch(:json_key),
       release_status: "completed",
       skip_upload_metadata: true,
