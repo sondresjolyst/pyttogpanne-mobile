@@ -18,7 +18,7 @@
       "bundleIdentifier": "no.pyttogpanne.app"
     },
     "android": {
-      "package": "no.pyttogpanne.app",
+      "package": "no.sjolystinnovation.pyttogpanne",
       "adaptiveIcon": {
         "backgroundColor": "#4A3726",
         "foregroundImage": "./assets/android-icon-foreground.png",
