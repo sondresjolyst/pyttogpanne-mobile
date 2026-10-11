@@ -79,6 +79,12 @@ src/recipes/      amount scaling and ingredient grouping
 src/theme/        colours, spacing, type scale
 ```
 
+### Releases
+
+Merging the release pull request release-please opens ships a signed build to
+Play closed testing. Promoting it to production is a separate
+`🚀 Promote to production` workflow run.
+
 ### How the offline copy works
 
 `CatalogProvider` reads the cache from AsyncStorage, then asks the API for

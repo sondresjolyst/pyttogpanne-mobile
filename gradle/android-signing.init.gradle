@@ -1,0 +1,35 @@
+// Applies the upload keystore to the release build type.
+//
+// `expo prebuild` regenerates android/app/build.gradle from a template whose
+// release build type is wired to signingConfigs.debug, so the signing config
+// has to be imposed from outside the generated project. This file is passed
+// with --init-script and reads its values from the environment, which keeps
+// the keystore password out of gradle.properties and off the command line.
+//
+// afterEvaluate matters. The generated build script assigns signingConfig
+// during evaluation, so configuring earlier is silently overwritten.
+//
+// The android.injected.signing.* properties are not used. They are ignored by
+// AGP 9 in both the -P and gradle.properties forms, which produces a
+// debug signed or unsigned bundle rather than an error.
+
+def storePath = System.getenv('ANDROID_SIGNING_STORE_FILE')
+def storePass = System.getenv('ANDROID_SIGNING_STORE_PASSWORD')
+def aliasName = System.getenv('ANDROID_SIGNING_KEY_ALIAS')
+def keyPass = System.getenv('ANDROID_SIGNING_KEY_PASSWORD')
+
+if (storePath) {
+  allprojects { proj ->
+    proj.afterEvaluate {
+      if (!proj.plugins.hasPlugin('com.android.application')) { return }
+      def ext = proj.extensions.getByName('android')
+      def cfg = ext.signingConfigs.findByName('uploadKey') ?: ext.signingConfigs.create('uploadKey')
+      cfg.storeFile = proj.file(storePath)
+      cfg.storePassword = storePass
+      cfg.keyAlias = aliasName
+      cfg.keyPassword = keyPass
+      ext.buildTypes.getByName('release').signingConfig = cfg
+      proj.logger.lifecycle("android-signing: release signingConfig set to uploadKey for ${proj.path}")
+    }
+  }
+}

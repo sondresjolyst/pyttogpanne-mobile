@@ -42,3 +42,7 @@ yarn-error.*
 
 # dev server logs
 *.log
+
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/test_output

@@ -1,0 +1,51 @@
+default_platform(:android)
+
+TESTING_TRACKS = %w[internal alpha beta].freeze
+
+platform :android do
+  desc "Upload the release app bundle to a Play track"
+  lane :upload do |options|
+    track = options.fetch(:track)
+    unless TESTING_TRACKS.include?(track)
+      UI.user_error!("Refusing to upload to the #{track} track. Production is reached only through the promote_production lane, which is gated by the google-play-production environment.")
+    end
+
+    upload_to_play_store(
+      package_name: "no.pyttogpanne.app",
+      track: track,
+      aab: "android/app/build/outputs/bundle/release/app-release.aab",
+      json_key: options.fetch(:json_key),
+      release_status: "completed",
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Promote a version code that is already on a testing track to production"
+  lane :promote_production do |options|
+    from_track = options.fetch(:from_track)
+    unless TESTING_TRACKS.include?(from_track)
+      UI.user_error!("Refusing to promote from the #{from_track} track.")
+    end
+
+    version_code = options.fetch(:version_code).to_i
+    UI.user_error!("version_code must be a positive integer.") unless version_code.positive?
+
+    upload_to_play_store(
+      package_name: "no.pyttogpanne.app",
+      version_code: version_code,
+      track: from_track,
+      track_promote_to: "production",
+      track_promote_release_status: "completed",
+      json_key: options.fetch(:json_key),
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end
