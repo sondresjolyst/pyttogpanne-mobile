@@ -11,7 +11,7 @@ platform :android do
     end
 
     upload_to_play_store(
-      package_name: "no.pyttogpanne.app",
+      package_name: "no.sjolystinnovation.pyttogpanne",
       track: track,
       aab: "android/app/build/outputs/bundle/release/app-release.aab",
       mapping: "android/app/build/outputs/mapping/release/mapping.txt",
@@ -35,7 +35,7 @@ platform :android do
     UI.user_error!("version_code must be a positive integer.") unless version_code.positive?
 
     upload_to_play_store(
-      package_name: "no.pyttogpanne.app",
+      package_name: "no.sjolystinnovation.pyttogpanne",
       version_code: version_code,
       track: from_track,
       track_promote_to: "production",

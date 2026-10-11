@@ -8,6 +8,17 @@ on:
         type: string
         required: false
         default: alpha
+    secrets:
+      ANDROID_KEYSTORE_BASE64:
+        required: false
+      ANDROID_KEYSTORE_PASSWORD:
+        required: false
+      ANDROID_KEY_ALIAS:
+        required: false
+      ANDROID_KEY_PASSWORD:
+        required: false
+      GOOGLE_PLAY_SERVICE_ACCOUNT_JSON:
+        required: false
   workflow_dispatch:
     inputs:
       track:
@@ -128,7 +139,7 @@ jobs:
           ANDROID_SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
-          ./gradlew :app:bundleRelease --init-script ../gradle/android-signing.init.gradle | tee gradle.log
+          ./gradlew :app:bundleRelease --build-cache --init-script ../gradle/android-signing.init.gradle | tee gradle.log
           if ! grep -q 'android-signing: release signingConfig set to uploadKey' gradle.log; then
             echo "::error::The signing init script did not apply. The bundle would be debug signed or unsigned."
             exit 1
