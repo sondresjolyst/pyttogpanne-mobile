@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.2](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.1.1...v1.1.2) (2026-10-18)
+
+
+### Bug Fixes
+
+* **deps:** align dependencies with Expo SDK 57 ([#46](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/46)) ([2efaec9](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/2efaec9067163c2b54df1b9b5423cc13e95ef4ec))
+* load resized WebP images and prefetch the photos the screens show ([#47](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/47)) ([f2fcf4d](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/f2fcf4d6774b279fb2ead15e56670a0c7087820f))
+* use the store package name and pass signing secrets to the Android release ([#44](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/44)) ([fa852f5](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/fa852f560c54663910a589c29b20a0d26ca458bb))
+
+
+### Dependencies
+
+* **npm:** bump the react group with 2 updates ([#48](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/48)) ([5d51f34](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/5d51f348d18238357788ac370f67920ea368a87e))
+* **npm:** bump the react-native group with 2 updates ([#50](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/50)) ([e01c4fc](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e01c4fcae9e859e73b42ca5b5048394ade52e7a7))
+
 ## [1.1.1](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.1.0...v1.1.1) (2026-10-11)
 
 
