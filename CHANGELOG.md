@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.3](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.1.2...v1.1.3) (2026-10-25)
+
+
+### Dependencies
+
+* **npm:** bump `@tanstack/react-query` from 5.104.1 to 5.104.4 ([#60](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/60)) ([948b7b8](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/948b7b8125b13a8f9c5e59fb6a61db77634eb8c2))
+* **npm:** bump the expo group across 1 directory with 5 updates ([#57](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/57)) ([469588a](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/469588a01312248f796206ec80cf443a28524977))
+* **npm:** bump the react group across 1 directory with 2 updates ([#55](https://github.com/sondresjolyst/pyttogpanne-mobile/issues/55)) ([f1c49c1](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/f1c49c19ec65849b88d0d134a8415b89214d95dd))
+
 ## [1.1.2](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.1.1...v1.1.2) (2026-10-18)
 
 
