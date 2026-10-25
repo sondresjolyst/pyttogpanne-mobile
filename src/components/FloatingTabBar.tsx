@@ -19,7 +19,7 @@ const ICONS: Record<string, { on: keyof typeof Ionicons.glyphMap; off: keyof typ
 type TabBarProps = Parameters<NonNullable<ComponentProps<typeof Tabs>['tabBar']>>[0];
 
 /** The tab bar as a pill floating over the content, rather than a bar welded to the bottom. */
-export default function FloatingTabBar({ state, descriptors, navigation }: TabBarProps) {
+export default function FloatingTabBar({ state, descriptors, emitter, navigateToTab }: TabBarProps) {
     const insets = useSafeAreaInsets();
 
     return (
@@ -32,15 +32,15 @@ export default function FloatingTabBar({ state, descriptors, navigation }: TabBa
                     const icon = ICONS[route.name] ?? { on: 'ellipse', off: 'ellipse-outline' };
 
                     const onPress = () => {
-                        const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-                        if (!focused && !event.defaultPrevented) navigation.navigate(route.name);
+                        const event = emitter.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
+                        if (!focused && !event.defaultPrevented) navigateToTab(route.key);
                     };
 
                     return (
                         <Pressable
                             key={route.key}
                             onPress={onPress}
-                            onLongPress={() => navigation.emit({ type: 'tabLongPress', target: route.key })}
+                            onLongPress={() => emitter.emit({ type: 'tabLongPress', target: route.key })}
                             accessibilityRole="button"
                             accessibilityState={{ selected: focused }}
                             accessibilityLabel={label}
