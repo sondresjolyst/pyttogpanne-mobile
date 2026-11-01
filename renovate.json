@@ -2,5 +2,35 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "github>sondresjolyst/si-renovate-config"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "react-native",
+        "react-native-*"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": [
+        "expo",
+        "expo-*",
+        "jest",
+        "@types/jest",
+        "typescript",
+        "eslint"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    }
   ]
 }
