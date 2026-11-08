@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.1.3...v1.1.4) (2026-11-08)
+
+
+### Dependencies
+
+* **npm:** update @react-native-async-storage/async-storage from 2.2.0 to 3.1.1 ([f03d6b5](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/f03d6b5a0e0587d8508d1805135f1d2b938a1d5c))
+
 ## [1.1.3](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.1.2...v1.1.3) (2026-10-25)
 
 
