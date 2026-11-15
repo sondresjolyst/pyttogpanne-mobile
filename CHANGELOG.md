@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.1.5](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.1.4...v1.1.5) (2026-11-15)
+
+
+### Dependencies
+
+* **npm:** update @expo/vector-icons from ^15.0.2 to 15.1.1 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update @tanstack/query-async-storage-persister from ^5.104.0 to 5.104.1 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update @tanstack/react-query from ^5.104.4 to 5.104.4 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update @tanstack/react-query-persist-client from ^5.104.0 to 5.104.1 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update axios from ^1.20.0 to 1.20.0 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update expo from ~58.0.19 to 58.0.19 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update expo-build-properties from ~58.0.11 to 58.0.11 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update expo-constants from ~58.0.13 to 58.0.15 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update expo-font from ~58.0.10 to 58.0.11 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update expo-image from ~58.0.17 to 58.0.17 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update expo-linking from ~58.0.14 to 58.0.14 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update expo-router from ~58.0.26 to 58.0.26 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update expo-splash-screen from ~58.0.11 to 58.0.11 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update expo-status-bar from ~58.0.4 to 58.0.4 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update react from 19.3.0 to 19.3.1 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update react-dom from 19.3.0 to 19.3.1 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update react-native from 0.88.0 to 0.88.1 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update react-native-safe-area-context from ~5.10.1 to 5.10.1 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update react-native-screens from ~4.30.0 to 4.30.0 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+* **npm:** update react-native-worklets from 0.13.0 to 0.13.1 ([1556504](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/1556504cd53620ceb408b0b742b0efecec114bcc))
+
 ## [1.1.4](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.1.3...v1.1.4) (2026-11-08)
 
 
