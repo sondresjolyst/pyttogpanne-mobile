@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.1.6](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.1.5...v1.1.6) (2026-11-22)
+
+
+### Dependencies
+
+* **npm:** update @tanstack/query-async-storage-persister from 5.104.1 to 5.107.1 ([e1e9ffe](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e1e9ffea0a5d2b0d77063a888c8aa3ec71181b1b))
+* **npm:** update @tanstack/react-query from 5.104.4 to 5.107.1 ([e1e9ffe](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e1e9ffea0a5d2b0d77063a888c8aa3ec71181b1b))
+* **npm:** update @tanstack/react-query-persist-client from 5.104.1 to 5.107.1 ([e1e9ffe](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e1e9ffea0a5d2b0d77063a888c8aa3ec71181b1b))
+* **npm:** update axios from 1.20.0 to 1.21.1 ([e1e9ffe](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e1e9ffea0a5d2b0d77063a888c8aa3ec71181b1b))
+* **npm:** update expo from 58.0.19 to 58.0.25 ([e1e9ffe](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e1e9ffea0a5d2b0d77063a888c8aa3ec71181b1b))
+* **npm:** update expo-build-properties from 58.0.11 to 58.0.12 ([e1e9ffe](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e1e9ffea0a5d2b0d77063a888c8aa3ec71181b1b))
+* **npm:** update expo-constants from 58.0.15 to 58.0.16 ([e1e9ffe](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e1e9ffea0a5d2b0d77063a888c8aa3ec71181b1b))
+* **npm:** update expo-font from 58.0.11 to 58.0.12 ([e1e9ffe](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e1e9ffea0a5d2b0d77063a888c8aa3ec71181b1b))
+* **npm:** update expo-image from 58.0.17 to 58.0.18 ([e1e9ffe](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e1e9ffea0a5d2b0d77063a888c8aa3ec71181b1b))
+* **npm:** update expo-linking from 58.0.14 to 58.0.17 ([e1e9ffe](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e1e9ffea0a5d2b0d77063a888c8aa3ec71181b1b))
+* **npm:** update expo-router from 58.0.26 to 58.0.31 ([e1e9ffe](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e1e9ffea0a5d2b0d77063a888c8aa3ec71181b1b))
+* **npm:** update expo-splash-screen from 58.0.11 to 58.0.14 ([e1e9ffe](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e1e9ffea0a5d2b0d77063a888c8aa3ec71181b1b))
+* **npm:** update expo-status-bar from 58.0.4 to 58.0.5 ([e1e9ffe](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e1e9ffea0a5d2b0d77063a888c8aa3ec71181b1b))
+* **npm:** update react-native-screens from 4.30.0 to 4.30.1 ([e1e9ffe](https://github.com/sondresjolyst/pyttogpanne-mobile/commit/e1e9ffea0a5d2b0d77063a888c8aa3ec71181b1b))
+
 ## [1.1.5](https://github.com/sondresjolyst/pyttogpanne-mobile/compare/v1.1.4...v1.1.5) (2026-11-15)
 
 
